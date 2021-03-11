@@ -15,14 +15,14 @@ namespace SAS.Utilities
         [SerializeField] private int m_IntValue;
         [SerializeField] private float m_FloatValue;
 
-        internal string Name => m_Name;
-        internal ParameterType Type => m_Type;
-        internal bool BoolValue => m_BoolValue;
-        internal int IntValue => m_IntValue;
-        internal float FloatValue => m_FloatValue;
+        public string Name => m_Name;
+        public ParameterType Type => m_Type;
+        public bool BoolValue => m_BoolValue;
+        public int IntValue => m_IntValue;
+        public float FloatValue => m_FloatValue;
 
     }
-    
+
     public enum ParameterType
     {
         Float = 1,
