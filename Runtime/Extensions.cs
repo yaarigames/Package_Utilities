@@ -1,9 +1,36 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using Random = System.Random;
 
 namespace SAS.Utilities
 {
+    [System.Serializable]
+    public struct Parameter
+    {
+        [SerializeField] private string m_Name;
+        [SerializeField] private ParameterType m_Type;
+        [SerializeField] private bool m_BoolValue;
+        [SerializeField] private int m_IntValue;
+        [SerializeField] private float m_FloatValue;
+
+        internal string Name => m_Name;
+        internal ParameterType Type => m_Type;
+        internal bool BoolValue => m_BoolValue;
+        internal int IntValue => m_IntValue;
+        internal float FloatValue => m_FloatValue;
+
+    }
+    
+    public enum ParameterType
+    {
+        Float = 1,
+        Int = 3,
+        Bool = 4,
+        Trigger = 9
+    }
+
     public static class Extensions
     {
         private static Random rng = new Random();
@@ -20,5 +47,25 @@ namespace SAS.Utilities
                 list[n] = value;
             }
         }
+
+        public static void Apply(this Animator animator, in Parameter parameter)
+        {
+            switch (parameter.Type)
+            {
+                case ParameterType.Bool:
+                    animator.SetBool(parameter.Name, parameter.BoolValue);
+                    break;
+                case ParameterType.Int:
+                    animator.SetInteger(parameter.Name, parameter.IntValue);
+                    break;
+                case ParameterType.Float:
+                    animator.SetFloat(parameter.Name, parameter.FloatValue);
+                    break;
+                case ParameterType.Trigger:
+                    animator.SetTrigger(parameter.Name);
+                    break;
+            }
+        }
+
     }
 }
