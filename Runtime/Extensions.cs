@@ -6,6 +6,7 @@ using Random = System.Random;
 
 namespace SAS.Utilities
 {
+#pragma warning disable 0649
     [System.Serializable]
     public struct Parameter
     {
@@ -22,7 +23,7 @@ namespace SAS.Utilities
         public float FloatValue => m_FloatValue;
 
     }
-
+#pragma warning restore 0649
     public enum ParameterType
     {
         Float = 1,
