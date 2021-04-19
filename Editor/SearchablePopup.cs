@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace SAS.Utilities.Editor
 {
@@ -10,18 +12,18 @@ namespace SAS.Utilities.Editor
         private const float RowHeight = 16.0f;
         private const float RowIndent = 8.0f;
         private const string SearchControlName = "SearchText";
-        
-        public static void Show(Rect activatorRect, string[] options, int current, Action<int> onSelectionMade)
+
+        public static void Show(Rect activatorRect, string[] options, int selectedIndex, Action<int> onSelectionMade)
         {
-            SearchablePopup window = new SearchablePopup(options, current, onSelectionMade);
+            SearchablePopup window = new SearchablePopup(options, selectedIndex, onSelectionMade);
             PopupWindow.Show(activatorRect, window);
         }
 
         private static void Repaint()
-        { 
-            EditorWindow.focusedWindow.Repaint(); 
+        {
+            EditorWindow.focusedWindow.Repaint();
         }
- 
+
         private static void DrawBox(Rect rect, Color tint)
         {
             Color c = GUI.color;
@@ -29,7 +31,7 @@ namespace SAS.Utilities.Editor
             GUI.Box(rect, "", Selection);
             GUI.color = c;
         }
-        
+
         private class FilteredList
         {
             public struct Entry
@@ -37,7 +39,7 @@ namespace SAS.Utilities.Editor
                 public int Index;
                 public string Text;
             }
-            
+
             private string[] allItems { get; }
 
             public FilteredList(string[] items)
@@ -46,7 +48,7 @@ namespace SAS.Utilities.Editor
                 Entries = new List<Entry>();
                 UpdateFilter("");
             }
-         
+
             public string Filter { get; private set; }
             public List<Entry> Entries { get; private set; }
             public int MaxLength => allItems.Length;
@@ -55,10 +57,10 @@ namespace SAS.Utilities.Editor
             {
                 if (Filter == filter)
                     return false;
-                
+
                 Filter = filter;
                 Entries.Clear();
-                
+
                 for (int i = 0; i < allItems.Length; i++)
                 {
                     if (string.IsNullOrEmpty(Filter) || allItems[i].ToLower().Contains(Filter.ToLower()))
@@ -77,27 +79,27 @@ namespace SAS.Utilities.Editor
                 return true;
             }
         }
-        
-        private readonly Action<int> onSelectionMade;
+
+        private readonly Action<int> OnSelectionMade;
         private readonly FilteredList list;
         private int CurrentIndex { get; }
-        
+
         private Vector2 scroll;
         private int hoverIndex;
         private int scrollToIndex;
         private float scrollOffset;
-        
+
         private static GUIStyle SearchBox => "ToolbarSeachTextField";
         private static GUIStyle CancelButton => "ToolbarSeachCancelButton";
         private static GUIStyle DisabledCancelButton => "ToolbarSeachCancelButtonEmpty";
         private static GUIStyle Selection => "SelectionRect";
-        
+
         private SearchablePopup(string[] names, int currentIndex, Action<int> onSelectionMade)
         {
             list = new FilteredList(names);
-            this.CurrentIndex = currentIndex;
-            this.onSelectionMade = onSelectionMade;
-            
+            CurrentIndex = currentIndex;
+            OnSelectionMade = onSelectionMade;
+
             hoverIndex = currentIndex;
             scrollToIndex = currentIndex;
             scrollOffset = GetWindowSize().y - RowHeight * 2;
@@ -119,10 +121,10 @@ namespace SAS.Utilities.Editor
         public override Vector2 GetWindowSize()
         {
             return new Vector2(base.GetWindowSize().x,
-                Mathf.Min(600, list.MaxLength * RowHeight + 
+                Mathf.Min(600, list.MaxLength * RowHeight +
                 EditorStyles.toolbar.fixedHeight));
         }
-        
+
         public override void OnGUI(Rect rect)
         {
             Rect searchRect = new Rect(0, 0, rect.width, EditorStyles.toolbar.fixedHeight);
@@ -132,18 +134,18 @@ namespace SAS.Utilities.Editor
             DrawSearch(searchRect);
             DrawSelectionArea(scrollRect);
         }
-      
+
         private void DrawSearch(Rect rect)
         {
             if (Event.current.type == EventType.Repaint)
                 EditorStyles.toolbar.Draw(rect, false, false, false, false);
-            
+
             Rect searchRect = new Rect(rect);
             searchRect.xMin += 6;
             searchRect.xMax -= 6;
             searchRect.y += 2;
             searchRect.width -= CancelButton.fixedWidth;
-            
+
             GUI.FocusControl(SearchControlName);
             GUI.SetNextControlName(SearchControlName);
             string newText = GUI.TextField(searchRect, list.Filter, SearchBox);
@@ -156,7 +158,7 @@ namespace SAS.Utilities.Editor
 
             searchRect.x = searchRect.xMax;
             searchRect.width = CancelButton.fixedWidth;
-            
+
             if (string.IsNullOrEmpty(list.Filter))
                 GUI.Box(searchRect, GUIContent.none, DisabledCancelButton);
             else if (GUI.Button(searchRect, "x", CancelButton))
@@ -165,7 +167,7 @@ namespace SAS.Utilities.Editor
                 scroll = Vector2.zero;
             }
         }
-        
+
         private void DrawSelectionArea(Rect scrollRect)
         {
             Rect contentRect = new Rect(0, 0,
@@ -196,7 +198,9 @@ namespace SAS.Utilities.Editor
                         hoverIndex = i;
                     if (Event.current.type == EventType.MouseDown)
                     {
-                        onSelectionMade(list.Entries[i].Index);
+                        OnSelectionMade(list.Entries[i].Index);
+                        if (CurrentIndex != list.Entries[i].Index)
+                            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                         EditorWindow.focusedWindow.Close();
                     }
                 }
@@ -245,7 +249,9 @@ namespace SAS.Utilities.Editor
                 {
                     if (hoverIndex >= 0 && hoverIndex < list.Entries.Count)
                     {
-                        onSelectionMade(list.Entries[hoverIndex].Index);
+                        OnSelectionMade(list.Entries[hoverIndex].Index);
+                        if (CurrentIndex != list.Entries[hoverIndex].Index)
+                            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                         EditorWindow.focusedWindow.Close();
                     }
                 }
