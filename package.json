@@ -1,7 +1,7 @@
 {
   "name": "com.sas.utilities",
   "version": "0.0.1",
-  "displayName": "com.sas.utilities",
+  "displayName": "SAS Utilities",
   "unity": "2018.4",
   "hideInEditor": true
 }
