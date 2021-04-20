@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -40,7 +41,7 @@ namespace SAS.Utilities.Editor
                 public string Text;
             }
 
-            private string[] allItems { get; }
+            public string[] allItems { get; }
 
             public FilteredList(string[] items)
             {
@@ -121,7 +122,8 @@ namespace SAS.Utilities.Editor
 
         public override Vector2 GetWindowSize()
         {
-            return new Vector2(base.GetWindowSize().x,
+            string longest = list.allItems.OrderByDescending(s => s.Length).First();
+            return new Vector2(Mathf.Max(base.GetWindowSize().x, longest.Length * 8),
                 Mathf.Min(600, list.MaxLength * RowHeight +
                 EditorStyles.toolbar.fixedHeight));
         }
