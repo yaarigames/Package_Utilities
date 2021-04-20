@@ -13,9 +13,9 @@ namespace SAS.Utilities.Editor
         private const float RowIndent = 8.0f;
         private const string SearchControlName = "SearchText";
 
-        public static void Show(Rect activatorRect, string[] options, int selectedIndex, Action<int> onSelectionMade)
+        public static void Show(Rect activatorRect, string[] options, int selectedIndex, Action<int> onSelectionMade, Action onAddItemClicked = null)
         {
-            SearchablePopup window = new SearchablePopup(options, selectedIndex, onSelectionMade);
+            SearchablePopup window = new SearchablePopup(options, selectedIndex, onSelectionMade, onAddItemClicked);
             PopupWindow.Show(activatorRect, window);
         }
 
@@ -81,6 +81,7 @@ namespace SAS.Utilities.Editor
         }
 
         private readonly Action<int> OnSelectionMade;
+        private readonly Action OnAddItemClicked;
         private readonly FilteredList list;
         private int CurrentIndex { get; }
 
@@ -94,12 +95,12 @@ namespace SAS.Utilities.Editor
         private static GUIStyle DisabledCancelButton => "ToolbarSeachCancelButtonEmpty";
         private static GUIStyle Selection => "SelectionRect";
 
-        private SearchablePopup(string[] names, int currentIndex, Action<int> onSelectionMade)
+        private SearchablePopup(string[] names, int currentIndex, Action<int> onSelectionMade, Action onAddItemClicked)
         {
             list = new FilteredList(names);
             CurrentIndex = currentIndex;
             OnSelectionMade = onSelectionMade;
-
+            OnAddItemClicked = onAddItemClicked;
             hoverIndex = currentIndex;
             scrollToIndex = currentIndex;
             scrollOffset = GetWindowSize().y - RowHeight * 2;
@@ -128,11 +129,12 @@ namespace SAS.Utilities.Editor
         public override void OnGUI(Rect rect)
         {
             Rect searchRect = new Rect(0, 0, rect.width, EditorStyles.toolbar.fixedHeight);
-            Rect scrollRect = Rect.MinMaxRect(0, searchRect.yMax, rect.xMax, rect.yMax);
+            Rect scrollRect = Rect.MinMaxRect(0, searchRect.yMax, rect.xMax, rect.yMax - RowHeight * (OnAddItemClicked != null ? 1.5f : 0));
 
             HandleKeyboard();
             DrawSearch(searchRect);
             DrawSelectionArea(scrollRect);
+            DrawAddItemButton(new Rect(0, scrollRect.yMax, rect.width, EditorStyles.toolbar.fixedHeight));
         }
 
         private void DrawSearch(Rect rect)
@@ -208,8 +210,21 @@ namespace SAS.Utilities.Editor
                 DrawRow(rowRect, i);
                 rowRect.y = rowRect.yMax;
             }
-
             GUI.EndScrollView();
+        }
+
+        private void DrawAddItemButton(Rect rowRect)
+        {
+            if (OnAddItemClicked != null)
+            {
+                Rect labelRect = new Rect(rowRect);
+                labelRect.y += 2;
+                if (GUI.Button(labelRect, "Add Item..."))
+                {
+                    OnAddItemClicked();
+                    EditorWindow.focusedWindow.Close();
+                }
+            }
         }
 
         private void DrawRow(Rect rowRect, int i)
