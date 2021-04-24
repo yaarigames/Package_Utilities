@@ -135,8 +135,8 @@ namespace SAS.Utilities.Editor
         public override Vector2 GetWindowSize()
         {
             return new Vector2(base.GetWindowSize().x,
-                Mathf.Min(600, list.MaxLength * RowHeight +
-                EditorStyles.toolbar.fixedHeight));
+                Mathf.Min(400, (list.MaxLength + 1) * RowHeight +
+                EditorStyles.toolbar.fixedHeight + 5));
         }
 
         public override void OnGUI(Rect rect)
