@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -41,13 +40,26 @@ namespace SAS.Utilities.Editor
                 public string Text;
             }
 
-            public string[] allItems { get; }
+            private string[] allItems { get; }
 
             public FilteredList(string[] items)
             {
                 allItems = items;
+                allItems = Append(allItems, "None");
                 Entries = new List<Entry>();
                 UpdateFilter("");
+            }
+
+            public string[] Append(string[] array, string item)
+            {
+                if (array == null)
+                {
+                    return new string[] { item };
+                }
+                string[] result = new string[array.Length + 1];
+                array.CopyTo(result, 1);
+                result[0] = item;
+                return result;
             }
 
             public string Filter { get; private set; }
@@ -122,8 +134,7 @@ namespace SAS.Utilities.Editor
 
         public override Vector2 GetWindowSize()
         {
-            string longest = list.allItems.OrderByDescending(s => s.Length).First();
-            return new Vector2(Mathf.Max(base.GetWindowSize().x, longest.Length * 8),
+            return new Vector2(base.GetWindowSize().x,
                 Mathf.Min(600, list.MaxLength * RowHeight +
                 EditorStyles.toolbar.fixedHeight));
         }
@@ -202,7 +213,7 @@ namespace SAS.Utilities.Editor
                         hoverIndex = i;
                     if (Event.current.type == EventType.MouseDown)
                     {
-                        OnSelectionMade(list.Entries[i].Index);
+                        OnSelectionMade(list.Entries[i].Index - 1);
                         if (CurrentIndex != list.Entries[i].Index)
                             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                         EditorWindow.focusedWindow.Close();
@@ -266,7 +277,7 @@ namespace SAS.Utilities.Editor
                 {
                     if (hoverIndex >= 0 && hoverIndex < list.Entries.Count)
                     {
-                        OnSelectionMade(list.Entries[hoverIndex].Index);
+                        OnSelectionMade(list.Entries[hoverIndex].Index - 1);
                         if (CurrentIndex != list.Entries[hoverIndex].Index)
                             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                         EditorWindow.focusedWindow.Close();
