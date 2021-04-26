@@ -114,8 +114,8 @@ namespace SAS.Utilities.Editor
             CurrentIndex = currentIndex;
             OnSelectionMade = onSelectionMade;
             OnAddItemClicked = onAddItemClicked;
-            hoverIndex = currentIndex;
-            scrollToIndex = currentIndex;
+            hoverIndex = currentIndex + 1;
+            scrollToIndex = currentIndex + 1;
             scrollOffset = GetWindowSize().y - RowHeight * 2;
         }
 
@@ -242,7 +242,7 @@ namespace SAS.Utilities.Editor
 
         private void DrawRow(Rect rowRect, int i)
         {
-            if (list.Entries[i].Index == CurrentIndex)
+            if (list.Entries[i].Index == CurrentIndex + 1)
                 DrawBox(rowRect, Color.cyan);
             else if (i == hoverIndex)
                 DrawBox(rowRect, Color.white);
