@@ -6,6 +6,30 @@ using Random = System.Random;
 
 namespace SAS.Utilities
 {
+    public struct FloatRange
+    {
+        public float Min { get; }
+        public float Max { get; }
+
+        public FloatRange(float min, float max)
+        {
+            Min = min;
+            Max = max;
+        }
+    }
+
+    public struct IntRange
+    {
+        public int Min { get; }
+        public int Max { get; }
+
+        public IntRange(int min, int max)
+        {
+            Min = min;
+            Max = max;
+        }
+    }
+
 #pragma warning disable 0649
     [System.Serializable]
     public struct Parameter
