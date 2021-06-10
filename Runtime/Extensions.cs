@@ -9,26 +9,26 @@ namespace SAS.Utilities
     [Serializable]
     public struct floatRange
     {
-        public float Min { get; }
-        public float Max { get; }
+        public float min;
+        public float max;
 
         public floatRange(float min, float max)
         {
-            Min = min;
-            Max = max;
+            this.min = min;
+            this.max = max;
         }
     }
 
     [Serializable]
     public struct intRange
     {
-        public int Min { get; }
-        public int Max { get; }
+        public int min;
+        public int max;
 
         public intRange(int min, int max)
         {
-            Min = min;
-            Max = max;
+            this.min = min;
+            this.max = max;
         }
     }
 
