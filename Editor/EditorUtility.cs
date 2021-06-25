@@ -6,15 +6,22 @@ namespace SAS.Utilities.Editor
 {
     public static class EditorUtility
     {
-        public static void DropDown(int id, Rect position, string[] options, int selectedIndex, Action<int> onSelect, Action onAddItemClicked = null)
+        public static void DropDown(int id, Rect position, string[] options, int selectedIndex, string defaultText, Color color, Action<int> onSelect, Action onAddItemClicked = null)
         {
             int controlID = GUIUtility.GetControlID(id, FocusType.Keyboard, position);
             int result = selectedIndex;
-
-            if (DropdownButton(controlID, position, new GUIContent(selectedIndex ==-1 ? "None" : options[selectedIndex])))
+            var previousColor = GUI.contentColor;
+            GUI.contentColor = color;
+            if (DropdownButton(controlID, position, new GUIContent(selectedIndex == -1 ? defaultText : options[selectedIndex])))
             {
                 SearchablePopup.Show(position, options, selectedIndex, onSelect, onAddItemClicked);
             }
+            GUI.contentColor = previousColor;
+        }
+
+        public static void DropDown(int id, Rect position, string[] options, int selectedIndex, Action<int> onSelect, Action onAddItemClicked = null)
+        {
+            DropDown(id, position, options, selectedIndex, "None", Color.white, onSelect, onAddItemClicked);
         }
 
         private static bool DropdownButton(int id, Rect position, GUIContent content)
