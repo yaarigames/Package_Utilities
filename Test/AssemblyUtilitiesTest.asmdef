@@ -1,10 +1,13 @@
 {
-    "name": "AssemblyUtilityEditor",
-    "references": [],
+    "name": "AssemblyPoolingTest",
+    "references": [
+        "GUID:0e3d5faf9ae20ba40903faafafdca5a2"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [
         "Android",
         "CloudRendering",
+        "Editor",
         "iOS",
         "LinuxStandalone64",
         "Lumin",
