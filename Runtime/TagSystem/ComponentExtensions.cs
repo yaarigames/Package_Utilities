@@ -8,6 +8,11 @@ namespace SAS.TagSystem
 {
     public static class ComponentExtensions
     {
+        private static Dictionary<Type, Func<Component, Type, string, Component>> _componentCreator = new Dictionary<Type, Func<Component, Type, string, Component>>
+        {
+            { typeof(AddComponentAttribute), (comp, type, tag) => comp.AddComponent(type, tag) },
+        };
+
         private static Dictionary<Type, Func<Component, Type, bool, Component>> _componentFetchers = new Dictionary<Type, Func<Component, Type, bool, Component>>
         {
             { typeof(FieldRequiresSelfAttribute), (comp, type, includeInactive) => comp.GetComponent(type) },
@@ -46,25 +51,39 @@ namespace SAS.TagSystem
                 var requirement = field.GetCustomAttribute<BaseRequiresComponent>(false);
                 if (requirement != null)
                 {
-                    if (field.FieldType.IsArray)
-                    {
-                        var elementType = field.FieldType.GetElementType();
-                         var dependencies = default(Component[]);
-                        if (string.IsNullOrEmpty(requirement.tag))
-                            dependencies = _componentsFetchers[requirement.GetType()](component, elementType, requirement.includeInactive);
-                        else
-                             dependencies = _componentsWithTagFetchers[requirement.GetType()](component, elementType, requirement.tag, requirement.includeInactive);
-
-                        field.SetValue(component, ConvertArray(dependencies, elementType));
-                    }
-                    else
+                    if (requirement is AddComponentAttribute)
                     {
                         var dependency = default(Component);
                         if (string.IsNullOrEmpty(requirement.tag))
-                            dependency = _componentFetchers[requirement.GetType()](component, field.FieldType, requirement.includeInactive);
+                            dependency = _componentFetchers[typeof(FieldRequiresSelfAttribute)](component, field.FieldType, requirement.includeInactive);
                         else
-                            dependency = _componentWithTagFetchers[requirement.GetType()](component, field.FieldType, requirement.tag, requirement.includeInactive);
+                            dependency = _componentWithTagFetchers[typeof(FieldRequiresSelfAttribute)](component, field.FieldType, requirement.tag, requirement.includeInactive);
+                        if (dependency == null)
+                            dependency = _componentCreator[requirement.GetType()](component, field.FieldType, requirement.tag);
                         field.SetValue(component, dependency);
+                    }
+                    else
+                    {
+                        if (field.FieldType.IsArray)
+                        {
+                            var elementType = field.FieldType.GetElementType();
+                            var dependencies = default(Component[]);
+                            if (string.IsNullOrEmpty(requirement.tag))
+                                dependencies = _componentsFetchers[requirement.GetType()](component, elementType, requirement.includeInactive);
+                            else
+                                dependencies = _componentsWithTagFetchers[requirement.GetType()](component, elementType, requirement.tag, requirement.includeInactive);
+
+                            field.SetValue(component, ConvertArray(dependencies, elementType));
+                        }
+                        else
+                        {
+                            var dependency = default(Component);
+                            if (string.IsNullOrEmpty(requirement.tag))
+                                dependency = _componentFetchers[requirement.GetType()](component, field.FieldType, requirement.includeInactive);
+                            else
+                                dependency = _componentWithTagFetchers[requirement.GetType()](component, field.FieldType, requirement.tag, requirement.includeInactive);
+                            field.SetValue(component, dependency);
+                        }
                     }
                 }
             }

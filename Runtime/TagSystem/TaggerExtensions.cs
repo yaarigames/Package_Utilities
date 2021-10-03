@@ -6,6 +6,26 @@ namespace SAS.TagSystem
 {
     public static class TaggerExtensions
     {
+        public static Component AddComponent(this Component component, Type type, string tag = "")
+        {
+            var addedComponent = component.gameObject.AddComponent(type);
+
+            if (!string.IsNullOrEmpty(tag))
+            {
+                var tagger = component.GetComponent<Tagger>();
+                if (tagger == null)
+                    tagger = component.gameObject.AddComponent<Tagger>();
+                tagger.AddTag(addedComponent, tag);
+            }
+
+            return addedComponent;
+        }
+
+        public static T AddComponent<T>(this Component component, string tag = "")
+        {
+            return (T)(object)component.AddComponent(typeof(T), tag); 
+        }
+
         public static T GetComponent<T>(this Component component, string tag)
         {
             return (T)(object)component.GetComponent(typeof(T), tag);
@@ -54,7 +74,6 @@ namespace SAS.TagSystem
         public static T[] GetComponentsInChildren<T>(this Component component, string tag, bool includeInactive = false)
         {
             return (T[])(object)component.GetComponentInChildren(typeof(T), tag, includeInactive);
-            //return GetComponentsByTag(component.GetComponentsInChildren<T>(includeInactive), tag);
         }
 
         public static Component[] GetComponentsInChildren(this Component component, Type type, string tag, bool includeInactive = false)
