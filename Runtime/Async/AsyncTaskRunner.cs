@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SAS.Async
 {
-	public class RoutineManagerBehaviour : MonoBehaviour
+	public class AsyncTaskRunner : MonoBehaviour
 	{
 		public AsyncTaskManager Manager { get; } = new AsyncTaskManager();
 

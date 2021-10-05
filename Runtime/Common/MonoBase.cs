@@ -9,5 +9,10 @@ namespace SAS.Utilities
         {
             this.Initialize();
         }
+
+        protected virtual void OnDestroy()
+        {
+            // TODO: Use refection set sett all the properties null;
+        }
     }
 }

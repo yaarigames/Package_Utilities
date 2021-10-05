@@ -1,13 +1,16 @@
 using SAS.Async;
 using UnityEngine;
-public class TestRoutien : MonoBehaviour
+using SAS.Utilities;
+using SAS.TagSystem;
+
+public class TestRoutien : MonoBase
 {
-    public RoutineManagerBehaviour routineManager;
+    [AddComponent] AsyncTaskRunner _asyncTaskRunner;
     // Start is called before the first frame update
-    public async void Start()
+    public void Start()
     {
         Debug.Log(Time.frameCount);
-        routineManager.Run(PrintAnyOfTheNumbers());
+        _asyncTaskRunner.Run(PrintAnyOfTheNumbers());
         Debug.Log(Time.frameCount);
     }
 
