@@ -1,10 +1,9 @@
 {
     "name": "AssemblyPoolingTest",
     "references": [
-        "GUID:0e3d5faf9ae20ba40903faafafdca5a2"
+        "GUID:13cf59ac3f7b5964191f0da506f45fe2"
     ],
-    "includePlatforms": [],
-    "excludePlatforms": [
+    "includePlatforms": [
         "Android",
         "CloudRendering",
         "Editor",
@@ -22,6 +21,7 @@
         "WindowsStandalone64",
         "XboxOne"
     ],
+    "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],

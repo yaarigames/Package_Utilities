@@ -10,6 +10,5 @@ public class ParticleSystemPoolSO : ComponentPoolSO<ParticleSystem>
 	protected override IFactory<ParticleSystem> Factory
 	{
 		get => _factory;
-		set => _factory = null;
 	}
 }
