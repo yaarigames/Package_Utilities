@@ -76,7 +76,7 @@ namespace SAS.Locator
             return (T)GetOrCreate(typeof(T), tag);
         }
 
-        private object GetOrCreate(Type type, string tag = "")
+        public object GetOrCreate(Type type, string tag = "")
         {
             var key = GetKey(type, tag);
             if (!_services.TryGetValue(key, out var values))

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SAS.Locator;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,93 +9,109 @@ namespace SAS.TagSystem
 {
     public static class ComponentExtensions
     {
-        private static Dictionary<Type, Func<Component, Type, string, Component>> _componentCreator = new Dictionary<Type, Func<Component, Type, string, Component>>
+        public static readonly ServiceLocator serviceLocator = new ServiceLocator();
+
+        private readonly static Dictionary<Type, Func<Component, Type, string, Component>> _componentCreator = new Dictionary<Type, Func<Component, Type, string, Component>>
         {
             { typeof(AddComponentAttribute), (comp, type, tag) => comp.AddComponent(type, tag) },
         };
 
-        private static Dictionary<Type, Func<Component, Type, bool, Component>> _componentFetchers = new Dictionary<Type, Func<Component, Type, bool, Component>>
+        private static readonly Dictionary<Type, Func<Component, Type, bool, Component>> _componentFetchers = new Dictionary<Type, Func<Component, Type, bool, Component>>
         {
             { typeof(FieldRequiresSelfAttribute), (comp, type, includeInactive) => comp.GetComponent(type) },
             { typeof(FieldRequiresChildAttribute), (comp, type, includeInactive) => comp.GetComponentInChildren(type, includeInactive) },
             { typeof(FieldRequiresParentAttribute), (comp, type, includeInactive) => comp.GetComponentInParent(type) },
         };
 
-        private static Dictionary<Type, Func<Component, Type, string, bool, Component>> _componentWithTagFetchers = new Dictionary<Type, Func<Component, Type, string, bool, Component>>
+        private static readonly Dictionary<Type, Func<Component, Type, string, bool, Component>> _componentWithTagFetchers = new Dictionary<Type, Func<Component, Type, string, bool, Component>>
         {
             { typeof(FieldRequiresSelfAttribute), (comp, type, tag, includeInactive) => comp.GetComponent(type, tag) },
             { typeof(FieldRequiresChildAttribute), (comp, type, tag, includeInactive) => comp.GetComponentInChildren(type, tag, includeInactive) },
             { typeof(FieldRequiresParentAttribute), (comp, type, tag, includeInactive) => comp.GetComponentInParent(type, tag, includeInactive) },
         };
 
-        private static Dictionary<Type, Func<Component, Type, bool, Component[]>> _componentsFetchers
-           = new Dictionary<Type, Func<Component, Type, bool, Component[]>>
-           {
-                { typeof(FieldRequiresSelfAttribute), (comp, type, includeInactive) => comp.GetComponents(type) },
-                { typeof(FieldRequiresChildAttribute), (comp, type, includeInactive) => comp.GetComponentsInChildren(type, includeInactive) },
-                { typeof(FieldRequiresParentAttribute), (comp, type, includeInactive) => comp.GetComponentsInParent(type, includeInactive) },
-           };
-
-        private static Dictionary<Type, Func<Component, Type, string, bool, Component[]>> _componentsWithTagFetchers
-            = new Dictionary<Type, Func<Component, Type, string, bool, Component[]>>
-            {
-                { typeof(FieldRequiresSelfAttribute), (comp, type, tag, includeInactive) => comp.GetComponents(type, tag) },
-                { typeof(FieldRequiresChildAttribute), (comp, type, tag, includeInactive) => comp.GetComponentsInChildren(type, tag, includeInactive) },
-                { typeof(FieldRequiresParentAttribute), (comp, type, tag, includeInactive) => comp.GetComponentsInParent(type, tag, includeInactive) },
-            };
-
-        public static void Initialize(this Component component)
+        private static readonly Dictionary<Type, Func<Component, Type, bool, Component[]>> _componentsFetchers = new Dictionary<Type, Func<Component, Type, bool, Component[]>>
         {
-            var allFields = GetAllFields(component);
+             { typeof(FieldRequiresSelfAttribute), (comp, type, includeInactive) => comp.GetComponents(type) },
+             { typeof(FieldRequiresChildAttribute), (comp, type, includeInactive) => comp.GetComponentsInChildren(type, includeInactive) },
+             { typeof(FieldRequiresParentAttribute), (comp, type, includeInactive) => comp.GetComponentsInParent(type, includeInactive) },
+        };
+
+        private static Dictionary<Type, Func<Component, Type, string, bool, Component[]>> _componentsWithTagFetchers = new Dictionary<Type, Func<Component, Type, string, bool, Component[]>>
+        {
+             { typeof(FieldRequiresSelfAttribute), (comp, type, tag, includeInactive) => comp.GetComponents(type, tag) },
+             { typeof(FieldRequiresChildAttribute), (comp, type, tag, includeInactive) => comp.GetComponentsInChildren(type, tag, includeInactive) },
+             { typeof(FieldRequiresParentAttribute), (comp, type, tag, includeInactive) => comp.GetComponentsInParent(type, tag, includeInactive) },
+        };
+
+        public static void Initialize(this Component component, object instance = null)
+        {
+            instance = instance ?? component;
+            var allFields = GetAllFields(instance);
             foreach (var field in allFields)
             {
-                var requirement = field.GetCustomAttribute<BaseRequiresComponent>(false);
+                var requirement = field.GetCustomAttribute<BaseRequiresAttribute>(false);
                 if (requirement != null)
                 {
                     if (requirement is AddComponentAttribute)
                     {
                         var dependency = default(Component);
                         if (string.IsNullOrEmpty(requirement.tag))
-                            dependency = _componentFetchers[typeof(FieldRequiresSelfAttribute)](component, field.FieldType, requirement.includeInactive);
+                            dependency = _componentFetchers[typeof(FieldRequiresSelfAttribute)](component, field.FieldType, true);
                         else
-                            dependency = _componentWithTagFetchers[typeof(FieldRequiresSelfAttribute)](component, field.FieldType, requirement.tag, requirement.includeInactive);
+                            dependency = _componentWithTagFetchers[typeof(FieldRequiresSelfAttribute)](component, field.FieldType, requirement.tag, true);
                         if (dependency == null)
                             dependency = _componentCreator[requirement.GetType()](component, field.FieldType, requirement.tag);
-                        field.SetValue(component, dependency);
+                        field.SetValue(instance, dependency);
                     }
                     else
                     {
-                        if (field.FieldType.IsArray)
+                        if (requirement is BaseRequiresComponent)
                         {
-                            var elementType = field.FieldType.GetElementType();
-                            var dependencies = default(Component[]);
-                            if (string.IsNullOrEmpty(requirement.tag))
-                                dependencies = _componentsFetchers[requirement.GetType()](component, elementType, requirement.includeInactive);
-                            else
-                                dependencies = _componentsWithTagFetchers[requirement.GetType()](component, elementType, requirement.tag, requirement.includeInactive);
+                            var componentRequirement = requirement as BaseRequiresComponent;
+                            if (field.FieldType.IsArray)
+                            {
+                                var elementType = field.FieldType.GetElementType();
+                                var dependencies = default(Component[]);
+                                if (string.IsNullOrEmpty(requirement.tag))
+                                    dependencies = _componentsFetchers[requirement.GetType()](component, elementType, componentRequirement.includeInactive);
+                                else
+                                    dependencies = _componentsWithTagFetchers[requirement.GetType()](component, elementType, requirement.tag, componentRequirement.includeInactive);
 
-                            field.SetValue(component, ConvertArray(dependencies, elementType));
-                        }
-                        else
-                        {
-                            var dependency = default(Component);
-                            if (string.IsNullOrEmpty(requirement.tag))
-                                dependency = _componentFetchers[requirement.GetType()](component, field.FieldType, requirement.includeInactive);
+                                field.SetValue(instance, ConvertArray(dependencies, elementType));
+                            }
                             else
-                                dependency = _componentWithTagFetchers[requirement.GetType()](component, field.FieldType, requirement.tag, requirement.includeInactive);
-                            field.SetValue(component, dependency);
+                            {
+                                var dependency = default(Component);
+                                if (string.IsNullOrEmpty(requirement.tag))
+                                    dependency = _componentFetchers[requirement.GetType()](component, field.FieldType, componentRequirement.includeInactive);
+                                else
+                                    dependency = _componentWithTagFetchers[requirement.GetType()](component, field.FieldType, requirement.tag, componentRequirement.includeInactive);
+                                field.SetValue(instance, dependency);
+                            }
+                        }
+                        else if (requirement is FieldRequiresModelAttribute)
+                        {
+                            var modelRequirement = requirement as FieldRequiresModelAttribute;
+                            if (modelRequirement.optional)
+                            {
+                                if (serviceLocator.TryGet(field.FieldType, out var service))
+                                    field.SetValue(instance, service);
+                            }
+                            else
+                                field.SetValue(instance, serviceLocator.GetOrCreate(field.FieldType, requirement.tag));
                         }
                     }
                 }
             }
         }
 
-        private static IEnumerable<FieldInfo> GetAllFields(this Component component)
+        private static IEnumerable<FieldInfo> GetAllFields(this object instance)
         {
-            var componentType = component.GetType();
-            var baseType = componentType.BaseType;
+            var instanceType = instance.GetType();
+            var baseType = instanceType.BaseType;
 
-            FieldInfo[] fields = componentType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            FieldInfo[] fields = instanceType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             var enumerable = fields.AsEnumerable();
 
             while (baseType != null)
