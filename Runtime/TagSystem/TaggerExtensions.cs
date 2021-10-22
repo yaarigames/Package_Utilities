@@ -96,5 +96,10 @@ namespace SAS.TagSystem
             else
                 return components.Where(component => component.GetComponent<Tagger>()?.Find(component)?.Value == tag).ToArray();
         }
+
+        public static string GetTag(this Component component)
+        {
+            return component.GetComponent<Tagger>()?.Find(component)?.Value;
+        }
     }
 }
