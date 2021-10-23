@@ -5,7 +5,7 @@ using SAS.TagSystem;
 
 public class TestRoutien : MonoBase
 {
-    [AddComponent] AsyncTaskRunner _asyncTaskRunner;
+    [Inject] AsyncTaskRunner _asyncTaskRunner;
     // Start is called before the first frame update
     public void Start()
     {

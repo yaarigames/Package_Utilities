@@ -8,15 +8,18 @@ namespace SAS.TagSystem
     {
         public static Component AddComponent(this Component component, Type type, string tag = "")
         {
+            Tagger tagger = null;
+            if (!string.IsNullOrEmpty(tag))
+            {
+                tagger = component.GetComponent<Tagger>();
+                if (tagger == null)
+                    tagger = component.gameObject.AddComponent<Tagger>();
+            }
+
             var addedComponent = component.gameObject.AddComponent(type);
 
             if (!string.IsNullOrEmpty(tag))
-            {
-                var tagger = component.GetComponent<Tagger>();
-                if (tagger == null)
-                    tagger = component.gameObject.AddComponent<Tagger>();
                 tagger.AddTag(addedComponent, tag);
-            }
 
             return addedComponent;
         }

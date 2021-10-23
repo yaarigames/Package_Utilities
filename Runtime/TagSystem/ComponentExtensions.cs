@@ -13,7 +13,7 @@ namespace SAS.TagSystem
 
         private readonly static Dictionary<Type, Func<Component, Type, string, Component>> _componentCreator = new Dictionary<Type, Func<Component, Type, string, Component>>
         {
-            { typeof(AddComponentAttribute), (comp, type, tag) => comp.AddComponent(type, tag) },
+            { typeof(InjectAttribute), (comp, type, tag) => comp.AddComponent(type, tag) },
         };
 
         private static readonly Dictionary<Type, Func<Component, Type, bool, Component>> _componentFetchers = new Dictionary<Type, Func<Component, Type, bool, Component>>
@@ -53,46 +53,52 @@ namespace SAS.TagSystem
                 var requirement = field.GetCustomAttribute<BaseRequiresAttribute>(false);
                 if (requirement != null)
                 {
-                    if (requirement is AddComponentAttribute)
-                    {
-                        var dependency = default(Component);
-                        if (string.IsNullOrEmpty(requirement.tag))
-                            dependency = _componentFetchers[typeof(FieldRequiresSelfAttribute)](component, field.FieldType, true);
-                        else
-                            dependency = _componentWithTagFetchers[typeof(FieldRequiresSelfAttribute)](component, field.FieldType, requirement.tag, true);
-                        if (dependency == null)
-                            dependency = _componentCreator[requirement.GetType()](component, field.FieldType, requirement.tag);
-                        field.SetValue(instance, dependency);
-                    }
-                    else
-                    {
-                        if (requirement is BaseRequiresComponent)
-                        {
-                            var componentRequirement = requirement as BaseRequiresComponent;
-                            if (field.FieldType.IsArray)
-                            {
-                                var elementType = field.FieldType.GetElementType();
-                                var dependencies = default(Component[]);
-                                if (string.IsNullOrEmpty(requirement.tag))
-                                    dependencies = _componentsFetchers[requirement.GetType()](component, elementType, componentRequirement.includeInactive);
-                                else
-                                    dependencies = _componentsWithTagFetchers[requirement.GetType()](component, elementType, requirement.tag, componentRequirement.includeInactive);
 
-                                field.SetValue(instance, ConvertArray(dependencies, elementType));
-                            }
-                            else
-                            {
-                                var dependency = default(Component);
-                                if (string.IsNullOrEmpty(requirement.tag))
-                                    dependency = _componentFetchers[requirement.GetType()](component, field.FieldType, componentRequirement.includeInactive);
-                                else
-                                    dependency = _componentWithTagFetchers[requirement.GetType()](component, field.FieldType, requirement.tag, componentRequirement.includeInactive);
-                                field.SetValue(instance, dependency);
-                            }
-                        }
-                        else if (requirement is FieldRequiresModelAttribute)
+                    if (requirement is BaseRequiresComponent)
+                    {
+                        var componentRequirement = requirement as BaseRequiresComponent;
+                        if (field.FieldType.IsArray)
                         {
-                            var modelRequirement = requirement as FieldRequiresModelAttribute;
+                            var elementType = field.FieldType.GetElementType();
+                            var dependencies = default(Component[]);
+                            if (string.IsNullOrEmpty(requirement.tag))
+                                dependencies = _componentsFetchers[requirement.GetType()](component, elementType, componentRequirement.includeInactive);
+                            else
+                                dependencies = _componentsWithTagFetchers[requirement.GetType()](component, elementType, requirement.tag, componentRequirement.includeInactive);
+
+                            field.SetValue(instance, ConvertArray(dependencies, elementType));
+                        }
+                        else
+                        {
+                            var dependency = default(Component);
+                            if (string.IsNullOrEmpty(requirement.tag))
+                                dependency = _componentFetchers[requirement.GetType()](component, field.FieldType, componentRequirement.includeInactive);
+                            else
+                                dependency = _componentWithTagFetchers[requirement.GetType()](component, field.FieldType, requirement.tag, componentRequirement.includeInactive);
+                            field.SetValue(instance, dependency);
+                        }
+                    }
+                    else if (requirement is InjectAttribute)
+                    {
+                        var modelRequirement = requirement as InjectAttribute;
+
+                        if (typeof(Component).IsAssignableFrom(field.FieldType))
+                        {
+                            var dependency = default(Component);
+                            if (string.IsNullOrEmpty(requirement.tag))
+                                dependency = _componentFetchers[typeof(FieldRequiresSelfAttribute)](component, field.FieldType, true);
+                            else
+                                dependency = _componentWithTagFetchers[typeof(FieldRequiresSelfAttribute)](component, field.FieldType, requirement.tag, true);
+
+                            if (!modelRequirement.optional)
+                            {
+                                if (dependency == null)
+                                    dependency = _componentCreator[requirement.GetType()](component, field.FieldType, requirement.tag);
+                            }
+                            field.SetValue(instance, dependency);
+                        }
+                        else
+                        {
                             if (modelRequirement.optional)
                             {
                                 if (serviceLocator.TryGet(field.FieldType, out var service))
