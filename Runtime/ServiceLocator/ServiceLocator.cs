@@ -60,7 +60,7 @@ namespace SAS.Locator
             if (!_services.TryGetValue(key, out var services))
             {
                 service = null;
-                Debug.LogError($"Required reference not found. {type.Name} with tag {tag} is found under actor {this}");
+                Debug.LogError($"Required service of type {type.Name} with tag {tag} is not found");
                 return false;
             }
 
