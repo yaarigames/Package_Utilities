@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -11,7 +12,6 @@ namespace SAS.TagSystem.Editor
     {
         private ReorderableList _componentTagList;
         private string[] Tags => TagList.GetList();
-        private static TagList Instance => TagList.Instance();
 
         private void OnEnable()
         {
@@ -37,7 +37,7 @@ namespace SAS.TagSystem.Editor
                     Rect pos = new Rect(rect.width / 2 + 60, rect.y, rect.width / 2 - 20, rect.height);
                     int id = GUIUtility.GetControlID("SearchableStringDrawer".GetHashCode(), FocusType.Keyboard, pos);
 
-                    EditorUtility.DropDown(id, pos, Tags, Array.IndexOf(Tags, tag.stringValue), selectedIndex => OnTagSelected(index, selectedIndex), ShowTagList);
+                    EditorUtility.DropDown(id, pos, Tags, Array.IndexOf(Tags, tag.stringValue), selectedIndex => OnTagSelected(index, selectedIndex), AddTag);
                 }
             };
         }
@@ -56,9 +56,26 @@ namespace SAS.TagSystem.Editor
             UnityEditor.EditorUtility.SetDirty(target);
         }
 
-        private void ShowTagList()
+        private void AddTag()
         {
-            Selection.activeObject = Instance;
+            var value = EditorInputDialog.Show("Add Tag", "", "New Tag");
+            if (value == null)
+                return;
+            value = GetUniqueName(value, Tags);
+            TagList.Instance().Add(value);
+            UnityEditor.EditorUtility.SetDirty(TagList.Instance());
+        }
+
+        private string GetUniqueName(string nameBase, string[] usedNames)
+        {
+            string name = nameBase;
+            int counter = 1;
+            while (usedNames.Contains(name.Trim()))
+            {
+                name = nameBase + " " + counter;
+                counter++;
+            }
+            return name;
         }
     }
 }
