@@ -25,6 +25,8 @@ namespace SAS.TagSystem
 			}
 		}
 
+		[SerializeField] private List<Tag> m_Tags = new List<Tag>();
+
 		public IEnumerable<Component> Find<T>(string tag) where T : Component
 		{
 			return m_Tags.Where(item => item.Value == tag && item.Component.GetType() == typeof(T)).Select(item => item.Component);
@@ -40,7 +42,10 @@ namespace SAS.TagSystem
 			return m_Tags.FirstOrDefault(tag => tag.Component == component);
 		}
 
-		[SerializeField] private List<Tag> m_Tags = new List<Tag>();
+		public bool HasTag(Component component, string tag)
+        {
+			return m_Tags.Find(item => item.Component == component && item.Value == tag) != null;		
+		}
 
 		public string GetTag(Component component)
 		{

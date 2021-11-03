@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 namespace SAS.TagSystem
 {
@@ -89,7 +90,7 @@ namespace SAS.TagSystem
             if (string.IsNullOrEmpty(tag))
                 return components.FirstOrDefault();
             else
-                return components.FirstOrDefault(component => component.GetComponent<Tagger>()?.Find(component)?.Value == tag);
+                return components.FirstOrDefault(component => HasTag(component, tag));
         }
 
         private static T[] GetComponentsByTag<T>(T[] components, string tag) where T : Component
@@ -97,7 +98,16 @@ namespace SAS.TagSystem
             if (string.IsNullOrEmpty(tag))
                 return components;
             else
-                return components.Where(component => component.GetComponent<Tagger>()?.Find(component)?.Value == tag).ToArray();
+                return components.Where(component => HasTag(component, tag)).ToArray();
+        }
+
+        private static bool HasTag(Component component, string tag)
+        {
+            var tagger = component.GetComponent<Tagger>();
+            if (tagger != null)
+                return tagger.HasTag(component, tag);
+            else
+                return false;
         }
 
         public static string GetTag(this Component component)
