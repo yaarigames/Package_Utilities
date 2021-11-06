@@ -71,6 +71,19 @@ namespace SAS.Locator
             return true;
         }
 
+        public IEnumerable<T> GetAll<T>(string tag = "")
+        {
+            return GetAll(typeof(T), tag).Cast<T>();
+        }
+
+        public IEnumerable<object> GetAll(Type type, string tag = "")
+        {
+            if (_services.TryGetValue(GetKey(type, tag), out var value))
+                return value;
+            else
+                return Array.Empty<object>();
+        }
+
         public T GetOrCreate<T>(string tag = "")
         {
             return (T)GetOrCreate(typeof(T), tag);
