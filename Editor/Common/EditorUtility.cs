@@ -8,13 +8,23 @@ namespace SAS.Utilities.Editor
     {
         public static void DropDown(int id, Rect position, string[] options, int selectedIndex, string defaultText, Color color, Action<int> onSelect, Action onAddItemClicked = null)
         {
+            DrawDropDown(id, position, position, options, selectedIndex, defaultText, color, onSelect, onAddItemClicked);
+        }
+
+        public static void DropDown(int id, Rect position, Rect popupPos, string[] options, int selectedIndex, string defaultText, Color color, Action<int> onSelect, Action onAddItemClicked = null)
+        {
+            DrawDropDown(id, position, popupPos, options, selectedIndex, defaultText, color, onSelect, onAddItemClicked);
+        }
+
+        private static void DrawDropDown(int id, Rect position, Rect popupPos, string[] options, int selectedIndex, string defaultText, Color color, Action<int> onSelect, Action onAddItemClicked = null)
+        {
             int controlID = GUIUtility.GetControlID(id, FocusType.Keyboard, position);
             int result = selectedIndex;
             var previousColor = GUI.contentColor;
             GUI.contentColor = color;
             if (DropdownButton(controlID, position, new GUIContent(selectedIndex == -1 ? defaultText : options[selectedIndex])))
             {
-                SearchablePopup.Show(position, options, selectedIndex, onSelect, onAddItemClicked);
+                SearchablePopup.Show(popupPos, options, selectedIndex, onSelect, onAddItemClicked);
             }
             GUI.contentColor = previousColor;
         }
@@ -22,6 +32,11 @@ namespace SAS.Utilities.Editor
         public static void DropDown(int id, Rect position, string[] options, int selectedIndex, Action<int> onSelect, Action onAddItemClicked = null)
         {
             DropDown(id, position, options, selectedIndex, "None", Color.white, onSelect, onAddItemClicked);
+        }
+
+        public static void DropDown(int id, Rect position, Rect popupPos, string[] options, int selectedIndex, Action<int> onSelect, Action onAddItemClicked = null)
+        {
+            DropDown(id, position, popupPos, options, selectedIndex, "None", Color.white, onSelect, onAddItemClicked);
         }
 
         private static bool DropdownButton(int id, Rect position, GUIContent content)
