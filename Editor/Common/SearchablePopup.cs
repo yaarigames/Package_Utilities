@@ -77,7 +77,7 @@ namespace SAS.Utilities.Editor
 
                 for (int i = 0; i < allItems.Length; i++)
                 {
-                    if (string.IsNullOrEmpty(Filter) || allItems[i].ToLower().Contains(Filter.ToLower()))
+                    if (Contains(allItems[i],Filter))
                     {
                         Entry entry = new Entry
                         {
@@ -92,6 +92,23 @@ namespace SAS.Utilities.Editor
                 }
                 return true;
             }
+        }
+
+        private static bool Contains(string name, string m_Search)
+        {
+            if (m_Search.Length == 0)
+                return true;
+            string[] searchWords = m_Search.ToLower().Split(' ');
+
+            name = name.ToLower().Replace(" ", "");
+           
+            for (int w = 0; w < searchWords.Length; w++)
+            {
+                string search = searchWords[w];
+                if (!name.Contains(search))
+                    return false;
+            }
+            return true;
         }
 
         private readonly Action<int> OnSelectionMade;
