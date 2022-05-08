@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace SAS.Locator
+namespace SAS.TagSystem
 {
     public class ServiceLocator : IServiceLocator
     {

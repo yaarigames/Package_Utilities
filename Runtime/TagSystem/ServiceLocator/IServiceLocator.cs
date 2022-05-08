@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SAS.Locator
+namespace SAS.TagSystem
 {
     public interface IServiceLocator
     {

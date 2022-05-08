@@ -1,4 +1,4 @@
-﻿using SAS.Locator;
+﻿using SAS.TagSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,6 +48,8 @@ namespace SAS.TagSystem
         {
             instance = instance ?? component;
             var allFields = GetAllFields(instance);
+            var context = component.transform.root.GetComponent<IContext>();
+
             foreach (var field in allFields)
             {
                 var requirement = field.GetCustomAttribute<BaseRequiresAttribute>(false);
@@ -99,13 +101,26 @@ namespace SAS.TagSystem
                         }
                         else
                         {
-                            if (modelRequirement.optional)
+                            if (context != null)
                             {
-                                if (serviceLocator.TryGet(field.FieldType, out var service))
-                                    field.SetValue(instance, service);
+                                if (modelRequirement.optional)
+                                {
+                                    if (context.TryGet(field.FieldType, out var obj))
+                                        field.SetValue(instance, obj);
+                                }
+                                else
+                                    field.SetValue(instance, context.GetOrCreate(field.FieldType, requirement.tag));
                             }
                             else
-                                field.SetValue(instance, serviceLocator.GetOrCreate(field.FieldType, requirement.tag));
+                            {
+                                if (modelRequirement.optional)
+                                {
+                                    if (serviceLocator.TryGet(field.FieldType, out var service))
+                                        field.SetValue(instance, service);
+                                }
+                                else
+                                    field.SetValue(instance, serviceLocator.GetOrCreate(field.FieldType, requirement.tag));
+                            }
                         }
                     }
                 }
