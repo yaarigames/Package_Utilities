@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SAS.TagSystem
 {
-    public interface IServiceLocator
+    public interface IServiceLocator : IBindable
     {
         T Get<T>(string tag = "");
         bool TryGet<T>(out T service, string tag = "");

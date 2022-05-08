@@ -9,8 +9,6 @@ namespace SAS.TagSystem
 {
     public static class ComponentExtensions
     {
-        public static readonly ServiceLocator serviceLocator = new ServiceLocator();
-
         private readonly static Dictionary<Type, Func<Component, Type, string, Component>> _componentCreator = new Dictionary<Type, Func<Component, Type, string, Component>>
         {
             { typeof(InjectAttribute), (comp, type, tag) => comp.AddComponent(type, tag) },
@@ -110,16 +108,6 @@ namespace SAS.TagSystem
                                 }
                                 else
                                     field.SetValue(instance, context.GetOrCreate(field.FieldType, requirement.tag));
-                            }
-                            else
-                            {
-                                if (modelRequirement.optional)
-                                {
-                                    if (serviceLocator.TryGet(field.FieldType, out var service))
-                                        field.SetValue(instance, service);
-                                }
-                                else
-                                    field.SetValue(instance, serviceLocator.GetOrCreate(field.FieldType, requirement.tag));
                             }
                         }
                     }
