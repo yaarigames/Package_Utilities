@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
-using SAS.TagSystem;
 
-namespace SAS.Utilities
+namespace SAS.Utilities.TagSystem
 {
     public class MonoBase : MonoBehaviour
     {

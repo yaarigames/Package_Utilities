@@ -1,4 +1,3 @@
-using SAS.TagSystem.Editor;
 using System;
 using System.Linq;
 using UnityEditor;
@@ -6,7 +5,7 @@ using UnityEditorInternal;
 using UnityEngine;
 using EditorUtility = SAS.Utilities.Editor.EditorUtility;
 
-namespace SAS.TagSystem.Editor
+namespace SAS.Utilities.TagSystem.Editor
 {
     [CustomEditor(typeof(Binder))]
     public class BinderInspector : UnityEditor.Editor

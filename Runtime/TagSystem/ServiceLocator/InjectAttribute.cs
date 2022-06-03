@@ -1,7 +1,6 @@
-﻿using SAS.TagSystem;
-using UnityEngine.Scripting;
+﻿using UnityEngine.Scripting;
 
-namespace SAS.TagSystem
+namespace SAS.Utilities.TagSystem
 {
     [Preserve]
     public class InjectAttribute : BaseRequiresAttribute 

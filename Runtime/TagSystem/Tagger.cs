@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SAS.TagSystem
+namespace SAS.Utilities.TagSystem
 {
 	[DisallowMultipleComponent()]
 	public class Tagger : MonoBehaviour

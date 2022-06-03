@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SAS.TagSystem.Editor
+namespace SAS.Utilities.TagSystem.Editor
 {
     public static class BinderExtentions
     {

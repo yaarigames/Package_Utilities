@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SAS.TagSystem
+namespace SAS.Utilities.TagSystem
 {
     public interface IServiceLocator : IBindable
     {

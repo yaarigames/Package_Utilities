@@ -1,9 +1,8 @@
 ﻿using System.Linq;
 using UnityEngine;
 using System;
-using System.Collections.Generic;
 
-namespace SAS.TagSystem
+namespace SAS.Utilities.TagSystem
 {
     public static class TaggerExtensions
     {

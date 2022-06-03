@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SAS.TagSystem
+namespace SAS.Utilities.TagSystem
 {
 	[AttributeUsage(AttributeTargets.Field)]
 	public class FieldRequiresParentAttribute : BaseRequiresComponent

@@ -3,7 +3,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace SAS.TagSystem.Editor
+namespace SAS.Utilities.TagSystem.Editor
 {
     public class ContextMenuCommand
     {

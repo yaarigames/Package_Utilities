@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace SAS.TagSystem.Editor
+namespace SAS.Utilities.TagSystem.Editor
 {
     [CreateAssetMenu(fileName = "Tag List", menuName = "SAS/Tag List")]
     [System.Serializable]

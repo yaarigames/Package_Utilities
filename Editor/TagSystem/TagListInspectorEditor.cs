@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace SAS.TagSystem.Editor
+namespace SAS.Utilities.TagSystem.Editor
 {
     [CustomEditor(typeof(TagList), true)]
     public class TagListInspectorEditor : UnityEditor.Editor

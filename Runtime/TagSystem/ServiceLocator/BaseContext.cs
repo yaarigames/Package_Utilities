@@ -1,12 +1,16 @@
 using System;
 using UnityEngine;
 
-namespace SAS.TagSystem
+namespace SAS.Utilities.TagSystem
 {
     public class BaseContext : MonoBehaviour, IContext
     {
-
         [SerializeField] public Binder m_Binder;
+        protected void Awake()
+        {
+            this.Initialize();
+        }
+
         object IContext.GetOrCreate(Type type, string tag)
         {
             return m_Binder.GetOrCreate(type, tag);

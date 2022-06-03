@@ -5,7 +5,7 @@ using UnityEditorInternal;
 using UnityEngine;
 using EditorUtility = SAS.Utilities.Editor.EditorUtility;
 
-namespace SAS.TagSystem.Editor
+namespace SAS.Utilities.TagSystem.Editor
 {
     [CustomEditor(typeof(Tagger), true)]
     public class TaggerEditor : UnityEditor.Editor
