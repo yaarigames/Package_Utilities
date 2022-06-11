@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace SAS.Utilities.TagSystem
 {
     public interface IBindable
     {
+        void OnInstanceCreated();
     }
 
     [Serializable, CreateAssetMenu(menuName = "SAS/Binder")]
@@ -37,13 +39,22 @@ namespace SAS.Utilities.TagSystem
                         Debug.LogError($"No GameObject having component attached of the type:  {m_Type} with  tag: {m_Tag} found");
                 }
                 else
+                {
                     instance = Activator.CreateInstance(Type.GetType(m_Type));
+                   
+                }
 
-
+                InvokeInjecttionEvent((IBindable)instance);
                 return instance;
             }
 
+            private void InvokeInjecttionEvent(IBindable bindable)
+            {
+                bindable.OnInstanceCreated();
+            }
         }
+
+       
 
         [SerializeField] private Binding[] m_Bindings;
         private Dictionary<string, object> _cachedBindings = new Dictionary<string, object>();
@@ -64,24 +75,38 @@ namespace SAS.Utilities.TagSystem
             if (!_cachedBindings.TryGetValue(key, out var value))
             {
                 var instance = CreateInstance(type, tag);
-                _cachedBindings.Add(key, instance);
+                Add(type, instance, tag);
                 return instance;
             }
 
             return value;
         }
 
-        public bool TryGet(Type type, out object service, string tag = "")
+        public bool TryGet(Type type, out object instance, string tag = "")
         {
             var key = GetKey(type, tag);
-            if (!_cachedBindings.TryGetValue(key, out service))
+            if (!_cachedBindings.TryGetValue(key, out instance))
             {
-                service = null;
+                instance = null;
                 Debug.LogError($"Required service of type {type.Name} with tag {tag} is not found");
                 return false;
             }
 
             return true;
+        }
+
+        private void Add(Type type, object instance, string tag = "")
+        {
+            var key = GetKey(type, tag);
+            if (!_cachedBindings.TryGetValue(key, out instance))
+                _cachedBindings.Add(key, instance);
+
+            var baseTypes = type.GetInterfaces();
+            if (type.BaseType != null)
+                baseTypes = baseTypes.Prepend(type.BaseType).ToArray();
+
+            foreach (var baseType in baseTypes)
+                Add(baseType, instance, tag);
         }
 
         private object CreateInstance(Type type, string tag)

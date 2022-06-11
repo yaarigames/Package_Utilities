@@ -112,5 +112,10 @@ namespace SAS.Utilities.TagSystem
             var key = GetKey(type, tag);
             return !_services.Remove(key);
         }
+
+        public void OnInstanceCreated()
+        {
+            Debug.Log("Service Loactor has been injected for very first time");
+        }
     }
 }

@@ -41,11 +41,13 @@ namespace SAS.Utilities.TagSystem
              { typeof(FieldRequiresParentAttribute), (comp, type, tag, includeInactive) => comp.GetComponentsInParent(type, tag, includeInactive) },
         };
 
+        internal static Dictionary<string, IContext> _cachedContext = new Dictionary<string, IContext>();
+
         public static void Initialize(this Component component, object instance = null)
         {
             instance = instance ?? component;
             var allFields = GetAllFields(instance);
-            var context = component.transform.root.GetComponent<IContext>();
+            TryGetContext(component.gameObject, out var context);
 
             foreach (var field in allFields)
             {
@@ -80,35 +82,7 @@ namespace SAS.Utilities.TagSystem
                     else if (requirement is InjectAttribute)
                     {
                         var modelRequirement = requirement as InjectAttribute;
-
-                        if (typeof(Component).IsAssignableFrom(field.FieldType))
-                        {
-                            var dependency = default(Component);
-                            if (string.IsNullOrEmpty(requirement.tag))
-                                dependency = _componentFetchers[typeof(FieldRequiresSelfAttribute)](component, field.FieldType, true);
-                            else
-                                dependency = _componentWithTagFetchers[typeof(FieldRequiresSelfAttribute)](component, field.FieldType, requirement.tag, true);
-
-                            if (!modelRequirement.optional)
-                            {
-                                if (dependency == null)
-                                    dependency = _componentCreator[requirement.GetType()](component, field.FieldType, requirement.tag);
-                            }
-                            field.SetValue(instance, dependency);
-                        }
-                        else
-                        {
-                            if (context != null)
-                            {
-                                if (modelRequirement.optional)
-                                {
-                                    if (context.TryGet(field.FieldType, out var obj))
-                                        field.SetValue(instance, obj);
-                                }
-                                else
-                                    field.SetValue(instance, context.GetOrCreate(field.FieldType, requirement.tag));
-                            }
-                        }
+                        Inject(context, instance, field, modelRequirement);
                     }
                 }
             }
@@ -140,5 +114,65 @@ namespace SAS.Utilities.TagSystem
 
             return array;
         }
+
+        private static bool TryGetContext(GameObject gameObject, out IContext context)
+        {
+            if (!_cachedContext.TryGetValue(gameObject.scene.name, out context))
+            {
+                var scene = gameObject.scene;
+                var rootObjects = scene.GetRootGameObjects();
+                foreach (var rootObject in rootObjects)
+                {
+                    if (rootObject.TryGetComponent<IContext>(out context))
+                    {
+                        _cachedContext[scene.name] = context;
+                        return true;
+                    }
+
+                }
+            }
+            return false;
+        }
+
+        private static void Inject(IContext context, object instance, FieldInfo field, InjectAttribute requirement)
+        {
+            if (context == null)
+            {
+                InjectCrossContext(instance, field, requirement);
+                return;
+            }
+            if (requirement.optional)
+            {
+                if (context.TryGet(field.FieldType, out var obj))
+                    field.SetValue(instance, obj);
+            }
+            else
+            {
+                var value = context.GetOrCreate(field.FieldType, requirement.tag);
+                if (value != null)
+                    field.SetValue(instance, value);
+                else
+                    InjectCrossContext(instance, field, requirement);
+            }
+        }
+
+        private static void InjectCrossContext(object instance, FieldInfo field, InjectAttribute requirement)
+        {
+            if (_cachedContext.TryGetValue("DontDestroyOnLoad", out var crossContext))
+            {
+                if (requirement.optional)
+                {
+                    if (crossContext.TryGet(field.FieldType, out var obj))
+                        field.SetValue(instance, obj);
+                }
+                else
+                {
+                   var value = crossContext.GetOrCreate(field.FieldType, requirement.tag);
+                    if (value != null)
+                        field.SetValue(instance, value);
+                }
+            }
+        }
     }
 }
+

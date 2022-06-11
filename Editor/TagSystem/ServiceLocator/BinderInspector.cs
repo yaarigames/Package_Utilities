@@ -37,7 +37,7 @@ namespace SAS.Utilities.TagSystem.Editor
                 EditorGUI.LabelField(pos, "Injectable", style);
 
                 pos = new Rect(rect.x + 30 + rect.width / 3, rect.y - 2, rect.width / 3, rect.height - 2); //new Rect(rect.width - Mathf.Min(100, rect.width / 3 - 20) - 20, rect.y, width, rect.height);
-            EditorGUI.LabelField(pos, "Bind With", style);
+                EditorGUI.LabelField(pos, "Bind With", style);
 
                 pos = new Rect(rect.x + 30 + 2 * rect.width / 3, rect.y - 2, rect.width / 3 - 30, rect.height - 2);
                 EditorGUI.LabelField(pos, "Tag", style);
@@ -65,7 +65,7 @@ namespace SAS.Utilities.TagSystem.Editor
                         var script = (MonoScript)AssetDatabase.LoadAssetAtPath(path, typeof(MonoScript));
                         if (script != null)
                         {
-                            if (script.GetClass()?.AssemblyQualifiedName == injectableInterface.stringValue)
+                            if (script.GetClass()?.AssemblyQualifiedName == typeToBind.stringValue)
                             {
                                 AssetDatabase.OpenAsset(script);
                                 break;
