@@ -76,7 +76,7 @@ namespace SAS.Utilities.TagSystem
 
         public static T[] GetComponentsInChildren<T>(this Component component, string tag, bool includeInactive = false)
         {
-            return (T[])(object)component.GetComponentInChildren(typeof(T), tag, includeInactive);
+            return (T[])(object)component.GetComponentsInChildren(typeof(T), tag, includeInactive);
         }
 
         public static Component[] GetComponentsInChildren(this Component component, Type type, string tag, bool includeInactive = false)
