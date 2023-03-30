@@ -1,6 +1,7 @@
-﻿using System.Linq;
+using System.Linq;
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 namespace SAS.Utilities.TagSystem
 {
@@ -41,7 +42,7 @@ namespace SAS.Utilities.TagSystem
 
         public static Component[] GetComponents(this Component component, Type type, string tag)
         {
-            return (Component[])GetComponentsByTag(component.GetComponents(type), tag);
+            return GetComponentsByTag(component.GetComponents(type), tag);
         }
 
         public static T GetComponentInChildren<T>(this Component component, string tag, bool includeInactive = false)
@@ -66,7 +67,11 @@ namespace SAS.Utilities.TagSystem
 
         public static T[] GetComponentsInParent<T>(this Component component, string tag, bool includeInactive = false)
         {
-            return (T[])component.GetComponentsInParent(typeof(T), tag, includeInactive);
+            List<T> result = new List<T>();
+            var components = component.GetComponentsInParent(typeof(T), tag, includeInactive);
+            foreach (var c in components)
+                result.Add((T)(object)c);
+            return result.ToArray();
         }
 
         public static Component[] GetComponentsInParent(this Component component, Type type, string tag, bool includeInactive = false)
@@ -76,12 +81,16 @@ namespace SAS.Utilities.TagSystem
 
         public static T[] GetComponentsInChildren<T>(this Component component, string tag, bool includeInactive = false)
         {
-            return (T[])component.GetComponentsInChildren(typeof(T), tag, includeInactive);
+            List<T> result = new List<T>();
+            var components = component.GetComponentsInChildren(typeof(T), tag, includeInactive);
+            foreach (var c in components)
+                result.Add((T)(object)c);
+            return result.ToArray();
         }
 
         public static Component[] GetComponentsInChildren(this Component component, Type type, string tag, bool includeInactive = false)
         {
-            return (Component[]) GetComponentsByTag(component.GetComponentsInChildren(type, includeInactive), tag);
+            return GetComponentsByTag(component.GetComponentsInChildren(type, includeInactive), tag);
         }
 
         private static T GetComponentByTag<T>(T[] components, string tag) where T : Component
@@ -92,12 +101,20 @@ namespace SAS.Utilities.TagSystem
                 return components.FirstOrDefault(component => HasTag(component, tag));
         }
 
-        private static Array GetComponentsByTag<T>(T[] components, string tag) where T : Component
+        private static T[] GetComponentsByTag<T>(T[] components, string tag) where T : Component
         {
             if (string.IsNullOrEmpty(tag))
                 return components;
             else
-                return components.Where(component => HasTag(component, tag)).ToArray();
+            {
+                List<T> result = new List<T>();
+                foreach (T component in components)
+                {
+                    if (HasTag(component, tag))
+                        result.Add(component);
+                }
+                return result.ToArray();
+            }
         }
 
         private static bool HasTag(Component component, string tag)
