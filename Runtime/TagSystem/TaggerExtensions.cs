@@ -41,7 +41,7 @@ namespace SAS.Utilities.TagSystem
 
         public static Component[] GetComponents(this Component component, Type type, string tag)
         {
-            return GetComponentsByTag(component.GetComponents(type), tag);
+            return (Component[])GetComponentsByTag(component.GetComponents(type), tag);
         }
 
         public static T GetComponentInChildren<T>(this Component component, string tag, bool includeInactive = false)
@@ -66,7 +66,7 @@ namespace SAS.Utilities.TagSystem
 
         public static T[] GetComponentsInParent<T>(this Component component, string tag, bool includeInactive = false)
         {
-            return (T[])(object)component.GetComponentInParent(typeof(T), tag, includeInactive);
+            return (T[])component.GetComponentInParent(typeof(T), tag, includeInactive);
         }
 
         public static Component[] GetComponentsInParent(this Component component, Type type, string tag, bool includeInactive = false)
@@ -76,12 +76,12 @@ namespace SAS.Utilities.TagSystem
 
         public static T[] GetComponentsInChildren<T>(this Component component, string tag, bool includeInactive = false)
         {
-            return (T[])(object)component.GetComponentsInChildren(typeof(T), tag, includeInactive);
+            return (T[])component.GetComponentsInChildren(typeof(T), tag, includeInactive);
         }
 
         public static Component[] GetComponentsInChildren(this Component component, Type type, string tag, bool includeInactive = false)
         {
-            return GetComponentsByTag(component.GetComponentsInChildren(type, includeInactive), tag);
+            return (Component[]) GetComponentsByTag(component.GetComponentsInChildren(type, includeInactive), tag);
         }
 
         private static T GetComponentByTag<T>(T[] components, string tag) where T : Component
