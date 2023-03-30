@@ -92,7 +92,7 @@ namespace SAS.Utilities.TagSystem
                 return components.FirstOrDefault(component => HasTag(component, tag));
         }
 
-        private static T[] GetComponentsByTag<T>(T[] components, string tag) where T : Component
+        private static Array GetComponentsByTag<T>(T[] components, string tag) where T : Component
         {
             if (string.IsNullOrEmpty(tag))
                 return components;
