@@ -98,7 +98,7 @@ namespace SAS.Utilities.TagSystem
         private void Add(Type type, object instance, string tag = "")
         {
             var key = GetKey(type, tag);
-            if (!_cachedBindings.TryGetValue(key, out instance))
+           if (!_cachedBindings.TryGetValue(key,  out object cachedInstance))
                 _cachedBindings.Add(key, instance);
 
             var baseTypes = type.GetInterfaces();
