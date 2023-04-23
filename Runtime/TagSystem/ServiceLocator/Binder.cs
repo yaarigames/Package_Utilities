@@ -21,7 +21,7 @@ namespace SAS.Utilities.TagSystem
             [SerializeField] private string m_Tag;
             public Type InterfaceType => Type.GetType(m_Interface);
             public string Tag => m_Tag;
-            public object CreateInstance()
+            public object CreateInstance(Binder binder)
             {
                 object instance = default;
                 Type type = Type.GetType(m_Type);
@@ -40,7 +40,7 @@ namespace SAS.Utilities.TagSystem
                 }
                 else
                 {
-                    instance = Activator.CreateInstance(Type.GetType(m_Type));
+                    instance = Activator.CreateInstance(Type.GetType(m_Type), new[] { binder });
                    
                 }
 
@@ -98,7 +98,7 @@ namespace SAS.Utilities.TagSystem
         private void Add(Type type, object instance, string tag = "")
         {
             var key = GetKey(type, tag);
-           if (!_cachedBindings.TryGetValue(key,  out object cachedInstance))
+            if (!_cachedBindings.TryGetValue(key,  out object cachedInstance))
                 _cachedBindings.Add(key, instance);
 
             var baseTypes = type.GetInterfaces();
@@ -112,7 +112,7 @@ namespace SAS.Utilities.TagSystem
         private object CreateInstance(Type type, string tag)
         {
             var binding = Array.Find(m_Bindings, ele => ele.InterfaceType.Equals(type) && ele.Tag.Equals(tag, StringComparison.OrdinalIgnoreCase));
-            return binding?.CreateInstance();
+            return binding?.CreateInstance(this);
         }
     }
 }
