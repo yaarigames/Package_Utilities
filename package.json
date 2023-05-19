@@ -3,5 +3,8 @@
   "version": "0.0.1",
   "displayName": "SAS Utilities",
   "unity": "2018.4",
-  "hideInEditor": true
+  "hideInEditor": true,
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.1.0"
+  }
 }
