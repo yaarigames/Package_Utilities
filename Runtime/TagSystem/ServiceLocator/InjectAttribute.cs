@@ -6,7 +6,7 @@ namespace SAS.Utilities.TagSystem
     public class InjectAttribute : BaseRequiresAttribute 
     {
         public bool optional;
-        public InjectAttribute(string tag = "", bool optional = false)
+        public InjectAttribute(Tag tag = Tag.None, bool optional = false)
         {
             this.optional = optional;
             this.tag = tag;

@@ -11,7 +11,6 @@ namespace SAS.Utilities.TagSystem.Editor
     public class BinderInspector : UnityEditor.Editor
     {
         private ReorderableList _bindings;
-        private string[] Tags => TagList.GetList();
         private Type[] _allInterface;
         private Type[] _allBindableType;
         private void OnEnable()
@@ -94,11 +93,13 @@ namespace SAS.Utilities.TagSystem.Editor
 
                 pos = new Rect(rect.x + 30 + 2 * rect.width / 3, rect.y - 2, rect.width / 3 - 30, rect.height - 2);
                 id = GUIUtility.GetControlID("Tag".GetHashCode(), FocusType.Keyboard, pos);
-                var tagIndex = Array.IndexOf(Tags, tag.stringValue);
-                if (tagIndex != -1 || string.IsNullOrEmpty(tag.stringValue))
-                    EditorUtility.DropDown(id, pos, Tags, tagIndex, selectedIndex => SetTagSerializedProperty(tag, selectedIndex), AddTag);
-                else
-                    EditorUtility.DropDown(id, pos, Tags, tagIndex, tag.stringValue, Color.red, selectedIndex => SetTagSerializedProperty(tag, selectedIndex), AddTag);
+                var newValue = (int)(Tag)EditorGUI.EnumPopup(pos, (Tag)tag.enumValueFlag);
+                if (tag.enumValueFlag != newValue)
+                {
+                    tag.enumValueFlag = newValue;
+                    serializedObject.ApplyModifiedProperties();
+                    UnityEditor.EditorUtility.SetDirty(target);
+                }
             };
         }
 
@@ -131,34 +132,6 @@ namespace SAS.Utilities.TagSystem.Editor
             if (index != -1)
                 sp.stringValue = _allBindableType[index].AssemblyQualifiedName;
             serializedObject.ApplyModifiedProperties();
-        }
-
-        private void SetTagSerializedProperty(SerializedProperty sp, int index)
-        {
-            sp.stringValue = index != -1 ? Tags[index] : string.Empty;
-            serializedObject.ApplyModifiedProperties();
-        }
-
-        private void AddTag()
-        {
-            var value = EditorInputDialog.Show("Add Tag", "", "New Tag");
-            if (value == null)
-                return;
-            value = GetUniqueName(value, Tags);
-            TagList.Instance().Add(value);
-            UnityEditor.EditorUtility.SetDirty(TagList.Instance());
-        }
-
-        private string GetUniqueName(string nameBase, string[] usedNames)
-        {
-            string name = nameBase;
-            int counter = 1;
-            while (usedNames.Contains(name.Trim()))
-            {
-                name = nameBase + " " + counter;
-                counter++;
-            }
-            return name;
         }
     }
 }

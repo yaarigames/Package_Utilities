@@ -18,9 +18,9 @@ namespace SAS.Utilities.TagSystem
         {
             [SerializeField] private string m_Interface;
             [SerializeField] private string m_Type;
-            [SerializeField] private string m_Tag;
+            [SerializeField] private Tag m_Tag;
             public Type InterfaceType => Type.GetType(m_Interface);
-            public string Tag => m_Tag;
+            public Tag Tag => m_Tag;
             public object CreateInstance(Binder binder)
             {
                 object instance = default;
@@ -59,17 +59,17 @@ namespace SAS.Utilities.TagSystem
         [SerializeField] private Binding[] m_Bindings;
         private Dictionary<string, object> _cachedBindings = new Dictionary<string, object>();
 
-        private string GetKey(Type type, string tag)
+        private string GetKey(Type type, Tag tag)
         {
-            return $"{type.Name}{tag}";
+            return $"{type.Name}{tag.ToString()}";
         }
 
-        public T GetOrCreate<T>(string tag = "")
+        public T GetOrCreate<T>(Tag tag = Tag.None)
         {
             return (T)GetOrCreate(typeof(T), tag);
         }
 
-        public object GetOrCreate(Type type, string tag = "")
+        public object GetOrCreate(Type type, Tag tag = Tag.None)
         {
             var key = GetKey(type, tag);
             if (!_cachedBindings.TryGetValue(key, out var value))
@@ -82,7 +82,7 @@ namespace SAS.Utilities.TagSystem
             return value;
         }
 
-        public bool TryGet(Type type, out object instance, string tag = "")
+        public bool TryGet(Type type, out object instance, Tag tag = Tag.None)
         {
             var key = GetKey(type, tag);
             if (!_cachedBindings.TryGetValue(key, out instance))
@@ -95,7 +95,7 @@ namespace SAS.Utilities.TagSystem
             return true;
         }
 
-        private void Add(Type type, object instance, string tag = "")
+        private void Add(Type type, object instance, Tag tag = Tag.None)
         {
             var key = GetKey(type, tag);
             if (!_cachedBindings.TryGetValue(key,  out object cachedInstance))
@@ -109,9 +109,9 @@ namespace SAS.Utilities.TagSystem
                 Add(baseType, instance, tag);
         }
 
-        private object CreateInstance(Type type, string tag)
+        private object CreateInstance(Type type, Tag tag)
         {
-            var binding = Array.Find(m_Bindings, ele => ele.InterfaceType.Equals(type) && ele.Tag.Equals(tag, StringComparison.OrdinalIgnoreCase));
+            var binding = Array.Find(m_Bindings, ele => ele.InterfaceType.Equals(type) && ele.Tag == tag);
             return binding?.CreateInstance(this);
         }
     }

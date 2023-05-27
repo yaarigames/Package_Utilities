@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace SAS.Utilities.TagSystem.Editor
 {
-    [CustomEditor(typeof(TagList), true)]
-    public class TagListInspectorEditor : UnityEditor.Editor
+    [CustomEditor(typeof(KeyList), true)]
+    public class KeyListInspectorEditor : UnityEditor.Editor
     {
-		private ReorderableList _tagsList;
+		private ReorderableList _keyList;
 		private SerializedProperty _values; 
 
 		private void OnEnable()
@@ -19,29 +19,29 @@ namespace SAS.Utilities.TagSystem.Editor
 
 		private void CreateReorderableList()
 		{
-			_tagsList = new ReorderableList(serializedObject, _values, true, true, true, true);
-			_tagsList.drawHeaderCallback = (Rect rect) =>
+			_keyList = new ReorderableList(serializedObject, _values, true, true, true, true);
+			_keyList.drawHeaderCallback = (Rect rect) =>
 			{
 				EditorGUI.LabelField(rect, target.name);
 			};
 
-			_tagsList.onAddCallback = (list) =>
+			_keyList.onAddCallback = (list) =>
 			{
 				_values.InsertArrayElementAtIndex(_values.arraySize);
 				var currValue = _values.GetArrayElementAtIndex(_values.arraySize - 1);
-				var newValue = GetUniqueName("New Value", (target as TagList).values);
+				var newValue = GetUniqueName("New Value", (target as KeyList).values);
 				currValue.stringValue = newValue;
 				serializedObject.ApplyModifiedProperties();
 			};
 
-			_tagsList.onRemoveCallback = (list) =>
+			_keyList.onRemoveCallback = (list) =>
 			{
 				if (_values.GetArrayElementAtIndex(list.index) != null)
 					_values.DeleteArrayElementAtIndex(list.index);
 				serializedObject.ApplyModifiedProperties();
 			};
 
-			_tagsList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
+			_keyList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
 			{
 				if (_values.arraySize > 0)
 				{
@@ -52,7 +52,7 @@ namespace SAS.Utilities.TagSystem.Editor
 					var newValue = EditorGUI.DelayedTextField(new Rect(rect.width / 2 + 40, rect.y, rect.width / 2 - 20, rect.height), currValue.stringValue);
 					if (newValue != currValue.stringValue)
 					{
-						newValue = GetUniqueName(newValue, (target as TagList).values);
+						newValue = GetUniqueName(newValue, (target as KeyList).values);
 						currValue.stringValue = newValue;
 						serializedObject.ApplyModifiedProperties();
 					}
@@ -62,7 +62,7 @@ namespace SAS.Utilities.TagSystem.Editor
 
 		public override void OnInspectorGUI()
         {
-			_tagsList.DoLayoutList();
+			_keyList.DoLayoutList();
 		}
 
 		private string GetUniqueName(string nameBase, string[] usedNames)
