@@ -8,7 +8,7 @@ namespace SAS.Utilities.TagSystem
 {
     public static class ComponentExtensions
     {
-        private readonly static Dictionary<Type, Func<Component, Type, string, Component>> _componentCreator = new Dictionary<Type, Func<Component, Type, string, Component>>
+        private readonly static Dictionary<Type, Func<Component, Type, Tag, Component>> _componentCreator = new Dictionary<Type, Func<Component, Type, Tag, Component>>
         {
             { typeof(InjectAttribute), (comp, type, tag) => comp.AddComponent(type, tag) },
         };
@@ -20,7 +20,7 @@ namespace SAS.Utilities.TagSystem
             { typeof(FieldRequiresParentAttribute), (comp, type, includeInactive) => comp.GetComponentInParent(type) },
         };
 
-        private static readonly Dictionary<Type, Func<Component, Type, string, bool, Component>> _componentWithTagFetchers = new Dictionary<Type, Func<Component, Type, string, bool, Component>>
+        private static readonly Dictionary<Type, Func<Component, Type, Tag, bool, Component>> _componentWithTagFetchers = new Dictionary<Type, Func<Component, Type, Tag, bool, Component>>
         {
             { typeof(FieldRequiresSelfAttribute), (comp, type, tag, includeInactive) => comp.GetComponent(type, tag) },
             { typeof(FieldRequiresChildAttribute), (comp, type, tag, includeInactive) => comp.GetComponentInChildren(type, tag, includeInactive) },
@@ -34,7 +34,7 @@ namespace SAS.Utilities.TagSystem
              { typeof(FieldRequiresParentAttribute), (comp, type, includeInactive) => comp.GetComponentsInParent(type, includeInactive) },
         };
 
-        private static Dictionary<Type, Func<Component, Type, string, bool, Component[]>> _componentsWithTagFetchers = new Dictionary<Type, Func<Component, Type, string, bool, Component[]>>
+        private static Dictionary<Type, Func<Component, Type, Tag, bool, Component[]>> _componentsWithTagFetchers = new Dictionary<Type, Func<Component, Type, Tag, bool, Component[]>>
         {
              { typeof(FieldRequiresSelfAttribute), (comp, type, tag, includeInactive) => comp.GetComponents(type, tag) },
              { typeof(FieldRequiresChildAttribute), (comp, type, tag, includeInactive) => comp.GetComponentsInChildren(type, tag, includeInactive) },
@@ -62,7 +62,7 @@ namespace SAS.Utilities.TagSystem
                         {
                             var elementType = field.FieldType.GetElementType();
                             var dependencies = default(Component[]);
-                            if (string.IsNullOrEmpty(requirement.tag))
+                            if (requirement.tag == Tag.None)
                                 dependencies = _componentsFetchers[requirement.GetType()](component, elementType, componentRequirement.includeInactive);
                             else
                                 dependencies = _componentsWithTagFetchers[requirement.GetType()](component, elementType, requirement.tag, componentRequirement.includeInactive);
@@ -72,7 +72,7 @@ namespace SAS.Utilities.TagSystem
                         else
                         {
                             var dependency = default(Component);
-                            if (string.IsNullOrEmpty(requirement.tag))
+                            if (requirement.tag == Tag.None)
                                 dependency = _componentFetchers[requirement.GetType()](component, field.FieldType, componentRequirement.includeInactive);
                             else
                                 dependency = _componentWithTagFetchers[requirement.GetType()](component, field.FieldType, requirement.tag, componentRequirement.includeInactive);

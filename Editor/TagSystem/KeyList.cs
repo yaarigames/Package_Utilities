@@ -7,40 +7,41 @@ using UnityEngine;
 
 namespace SAS.Utilities.TagSystem.Editor
 {
-    [CreateAssetMenu(fileName = "Tag List", menuName = "SAS/Tag List")]
+    [CreateAssetMenu(fileName = "Key List", menuName = "SAS/Key List")]
     [System.Serializable]
-    public class TagList : ScriptableObject
+    public class KeyList : ScriptableObject
     {
-        public const string KeysIdentifier = "Key List";
         public string[] values = new string[] { };
 
-        public static TagList Instance(string assetName = "Tag List")
+        const string assetName = "Key List";
+        public static KeyList Instance()
         {
-            var basePath = "Assets/Editor Default Resources/TagList/";
-            var filePath = $"Assets/Editor Default Resources/TagList/{assetName}.asset";
+            var basePath = "Assets/Editor Default Resources/KeyList/";
+            var filePath = $"{basePath}/{assetName}.asset";
+
             if (!Directory.Exists(basePath))
             {
                 Directory.CreateDirectory(basePath);
             }
 
-            var asset = AssetDatabase.LoadAssetAtPath<TagList>(filePath);
+            var asset = AssetDatabase.LoadAssetAtPath<KeyList>(filePath);
             if (asset == null)
             {
-                asset = CreateInstance<TagList>();
+                asset = CreateInstance<KeyList>();
                 AssetDatabase.CreateAsset(asset, $"{filePath}");
                 AssetDatabase.SaveAssets();
             }
 
-            var tagListAssets = EditorGUIUtility.Load(filePath) as TagList;
-            return tagListAssets;
+            var keyListAssets = EditorGUIUtility.Load(filePath) as KeyList;
+            return keyListAssets;
         }
 
-        public static string[] GetList(string assetName = "Tag List")
+        public static string[] GetList()
         {
-            return Instance(assetName).values;
+            return Instance().values;
         }
 
-        public void Add(string value, string assetName = "Tag List")
+        public void Add(string value)
         {
             if (Array.IndexOf(values, value) == -1)
                 values = values.Concat(new string[] { value }).ToArray();
@@ -51,7 +52,7 @@ namespace SAS.Utilities.TagSystem.Editor
             values = values.Where(e => e != values[index]).ToArray();
         }
 
-        public void AddRange(List<string> values, string assetName = "Tag List")
+        public void AddRange(List<string> values)
         {
             this.values = this.values.Concat(values).ToArray();
             this.values = this.values.Distinct().ToArray();

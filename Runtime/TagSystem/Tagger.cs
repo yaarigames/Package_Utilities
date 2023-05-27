@@ -5,20 +5,20 @@ using System.Linq;
 
 namespace SAS.Utilities.TagSystem
 {
-	[DisallowMultipleComponent()]
+    [DisallowMultipleComponent()]
 	public class Tagger : MonoBehaviour
 	{
 		[Serializable]
 		public class Tag
 		{
 			[SerializeField] private Component m_Component;
-			[SerializeField] private string m_Value;
+			[SerializeField] private TagSystem.Tag m_Value;
 
 			public Component Component => m_Component;
 
-			public string Value { get => m_Value; set => m_Value = value; }
+			public  TagSystem.Tag Value { get => m_Value; set => m_Value = value; }
 
-			public Tag(Component component, string val)
+			public Tag(Component component, TagSystem.Tag val)
 			{
 				m_Component = component;
 				m_Value = val;
@@ -27,12 +27,12 @@ namespace SAS.Utilities.TagSystem
 
 		[SerializeField] private List<Tag> m_Tags = new List<Tag>();
 
-		public IEnumerable<Component> Find<T>(string tag) where T : Component
+		public IEnumerable<Component> Find<T>(TagSystem.Tag tag) where T : Component
 		{
 			return m_Tags.Where(item => item.Value == tag && item.Component.GetType() == typeof(T)).Select(item => item.Component);
 		}
 
-		public IEnumerable<Component> Find(Type type, string tag)
+		public IEnumerable<Component> Find(Type type, TagSystem.Tag tag)
 		{
 			return m_Tags.Where(item => item.Value == tag && item.Component.GetType() == type).Select(item => item.Component);
 		}
@@ -42,7 +42,7 @@ namespace SAS.Utilities.TagSystem
 			return m_Tags.FirstOrDefault(tag => tag.Component == component);
 		}
 
-		public bool HasTag(Component component, string tag)
+		public bool HasTag(Component component, TagSystem.Tag tag)
         {
 			return m_Tags.Find(item => item.Component == component && item.Value == tag) != null;		
 		}
@@ -50,14 +50,14 @@ namespace SAS.Utilities.TagSystem
 		public string GetTag(Component component)
 		{
 			var tag = m_Tags.Find(ele => ele.Component == component);
-			return tag?.Value;
+			return tag?.Value.ToString();
 		}
 
-		public void AddTag(Component component, string tagValue = "")
+		public void AddTag(Component component, TagSystem.Tag tagValue = TagSystem.Tag.None)
 		{
 			var tag = m_Tags.Find(ele => ele.Component == component);
-			if (tag == null || !tag.Value.Equals(tagValue, StringComparison.OrdinalIgnoreCase))
-				m_Tags.Add(new Tag(component, tagValue));
+			if (tag == null || tag.Value != tagValue)
+                m_Tags.Add(new Tag(component, TagSystem.Tag.None));
 		}
 
 		public void RemoveTag(Component component)

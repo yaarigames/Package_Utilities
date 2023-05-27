@@ -24,13 +24,13 @@ namespace SAS.Utilities.TagSystem
             base.Awake();
         }
 
-        object IContext.GetOrCreate(Type type, string tag)
+        object IContext.GetOrCreate(Type type, Tag tag)
         {
             return m_Binder.GetOrCreate(type, tag);
         }
 
 
-        bool IContext.TryGet(Type type, out object instance, string tag)
+        bool IContext.TryGet(Type type, out object instance, Tag tag)
         {
             return m_Binder.TryGet(type, out instance, tag);
         }

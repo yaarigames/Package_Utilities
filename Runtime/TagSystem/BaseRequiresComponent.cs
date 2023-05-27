@@ -8,6 +8,6 @@ namespace SAS.Utilities.TagSystem
     }
     public abstract class BaseRequiresAttribute : Attribute
     {
-        public string tag;
+        public Tag tag;
     }
 }
