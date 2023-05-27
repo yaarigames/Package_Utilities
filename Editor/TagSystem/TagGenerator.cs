@@ -174,8 +174,6 @@ namespace SAS.Utilities.TagSystem.Editor
         private static string GetUniqueName(string nameBase, List<string> usedNames)
         {
             nameBase = nameBase.Replace(" ", "");
-            nameBase = nameBase.ToLower();
-            nameBase = $"{char.ToUpper(nameBase[0])}{nameBase[1..]}";
             string name = nameBase;
             int counter = 1;
             while (usedNames.Contains(name.Trim()))
