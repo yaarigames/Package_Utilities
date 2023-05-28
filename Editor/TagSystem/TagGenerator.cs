@@ -16,7 +16,6 @@ namespace SAS.Utilities.TagSystem.Editor
 
         static TagGenerator()
         {
-            GenerateEnumFile();
             EditorApplication.delayCall += GenerateEnumFile;
         }
 
@@ -101,6 +100,8 @@ namespace SAS.Utilities.TagSystem.Editor
 
         private static void GenerateEnumFile()
         {
+            EditorApplication.delayCall -= GenerateEnumFile;
+
             string enumName = "Tag";
             var folderPath = "Assets/SASTag";
             var tagEnumFilePath = $"{folderPath}/{enumName}.cs";
@@ -115,7 +116,7 @@ namespace SAS.Utilities.TagSystem.Editor
 
             if (!File.Exists(assemblyDefinitionRefPath))
             {
-                CommnetOutTempTag("TempTag");
+                EmptyTempTagFile("TempTag");
                 string guid = GetAssemblyUitilitiesDefinitionAssetGuid();
                 string content = "{\r\n    \"reference\":\"GUID:" + guid + "\"\r\n}";
 
@@ -124,6 +125,9 @@ namespace SAS.Utilities.TagSystem.Editor
                 AssetDatabase.Refresh();
                 Debug.Log("Tag file generated at: " + assemblyDefinitionRefPath);
             }
+            else
+                EmptyTempTagFile("TempTag");
+
 
 
             if (!File.Exists(tagEnumFilePath))
@@ -207,7 +211,7 @@ namespace SAS.Utilities.TagSystem.Editor
             return "";
         }
 
-        private static void CommnetOutTempTag(string fileName)
+        private static void EmptyTempTagFile(string fileName)
         {
             string[] guids = AssetDatabase.FindAssets(fileName);
 
@@ -221,10 +225,9 @@ namespace SAS.Utilities.TagSystem.Editor
             {
                 string filePath = AssetDatabase.GUIDToAssetPath(guid);
                 string fileContents = File.ReadAllText(filePath);
-                string commentedContents = "/*\n" + fileContents + "\n*/";
-
-                File.WriteAllText(filePath, commentedContents);
-                Debug.Log("File path: " + filePath);
+                if (!string.IsNullOrEmpty(fileContents))
+                    File.WriteAllText(filePath, String.Empty);
+                Debug.Log("Empty TempTag File: " + filePath);
                 return;
             }
         }
