@@ -226,8 +226,10 @@ namespace SAS.Utilities.TagSystem.Editor
                 string filePath = AssetDatabase.GUIDToAssetPath(guid);
                 string fileContents = File.ReadAllText(filePath);
                 if (!string.IsNullOrEmpty(fileContents))
+                {
                     File.WriteAllText(filePath, String.Empty);
-                Debug.Log("Empty TempTag File: " + filePath);
+                    Debug.Log("Empty TempTag File: " + filePath);
+                }
                 return;
             }
         }
