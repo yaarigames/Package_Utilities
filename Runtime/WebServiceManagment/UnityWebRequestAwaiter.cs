@@ -9,11 +9,13 @@ namespace SAS.WebServiceManagment
     {
         private UnityWebRequestAsyncOperation asyncOp;
         private Action continuation;
+        private bool isCompleted;
 
         public UnityWebRequestAwaiter(UnityWebRequestAsyncOperation asyncOp)
         {
             this.asyncOp = asyncOp;
             asyncOp.completed += OnRequestCompleted;
+            isCompleted = false;
         }
 
         public bool IsCompleted { get { return asyncOp.isDone; } }
@@ -23,11 +25,14 @@ namespace SAS.WebServiceManagment
         public void OnCompleted(Action continuation)
         {
             this.continuation = continuation;
+            if (isCompleted)
+                continuation?.Invoke();
         }
 
         private void OnRequestCompleted(AsyncOperation obj)
         {
-            continuation();
+            isCompleted = true;
+            continuation?.Invoke();
         }
     }
 
