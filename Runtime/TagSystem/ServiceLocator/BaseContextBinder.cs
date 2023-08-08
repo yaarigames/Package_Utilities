@@ -53,10 +53,5 @@ namespace SAS.Utilities.TagSystem
         {
             m_Binder.Add(type, instance, tag);
         }
-
-        public void Add<Type>(Type instance, Tag tag = Tag.None)
-        {
-            (this as IContextBinder).Add(typeof(Type), instance, tag);
-        }
     }
 }

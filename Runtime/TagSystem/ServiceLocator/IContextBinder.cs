@@ -9,6 +9,5 @@ namespace SAS.Utilities.TagSystem
         bool TryGet<Type>(out Type instance, Tag tag = Tag.None);
 
         void Add(Type type, object instance, Tag tag = Tag.None);
-        void Add<Type>(Type instance, Tag tag = Tag.None);
     }
 }
