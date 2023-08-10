@@ -6,7 +6,7 @@ namespace SAS.Utilities.TagSystem
     {
         object GetOrCreate(Type type, Tag tag = Tag.None);
         bool TryGet(Type type, out object instance, Tag tag = Tag.None);
-        bool TryGet<Type>(out Type instance, Tag tag = Tag.None);
+        bool TryGet<T>(out T instance, Tag tag = Tag.None);
 
         void Add(Type type, object instance, Tag tag = Tag.None);
     }

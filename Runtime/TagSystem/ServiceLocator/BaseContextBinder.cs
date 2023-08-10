@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace SAS.Utilities.TagSystem
@@ -36,13 +35,13 @@ namespace SAS.Utilities.TagSystem
             return m_Binder.TryGet(type, out instance, tag);
         }
 
-        bool IContextBinder.TryGet<Type>(out Type instance, Tag tag)
+        bool IContextBinder.TryGet<T>(out T instance, Tag tag)
         {
             instance = default;
 
-            if ((this as IContextBinder).TryGet(typeof(Type), out object result, tag))
+            if ((this as IContextBinder).TryGet(typeof(T), out object result, tag))
             {
-                instance = (Type)result;
+                instance = (T)result;
                 return true;
             }
 
