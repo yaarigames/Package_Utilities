@@ -178,7 +178,16 @@ namespace SAS.Utilities.TagSystem.Editor
                 if (_enumNameValueMap.Contains(value))
                     val = (int)_enumNameValueMap[value];
                 else
-                    val = (int)_enumNameValueMap[index];
+                {
+                    try
+                    {
+                        val = (int)_enumNameValueMap[index];
+                    }
+                    catch
+                    {
+                        val = index;
+                    }
+                }
                 index++;
                 content += "\t\t" + value + " = " + val + ",\n";
             }
