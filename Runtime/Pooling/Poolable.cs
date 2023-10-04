@@ -17,10 +17,10 @@ namespace SAS.Pool
                 ObjectPool.Despawn(this);
         }
 
-        internal void OnSpawn()
+        internal void OnSpawn<T>(T obj)
         {
             foreach (var spawnable in _spawnables)
-                spawnable.OnSpawn();
+                spawnable.OnSpawn(obj);
         }
 
         internal void OnDespawn()

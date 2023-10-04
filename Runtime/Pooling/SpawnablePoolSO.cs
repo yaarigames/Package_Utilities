@@ -5,7 +5,7 @@ namespace SAS.Pool
     [CreateAssetMenu(menuName = "SAS/Pool/Spawnable Object")]
     public class SpawnablePoolSO : ComponentPoolSO<Poolable>
     {
-        [SerializeField] private SpawnableFactorySO _factory = default;
+        [SerializeField] private FactorySO<Poolable> _factory = default;
         protected override IFactory<Poolable> Factory => _factory;
 
         protected override bool Create(out Poolable item)
@@ -15,10 +15,10 @@ namespace SAS.Pool
             return item != null;
         }
 
-        public override Poolable Spawn()
+        public override Poolable Spawn<O>(O obj)
         {
-            var item = base.Spawn();
-            item?.OnSpawn();
+            var item = base.Spawn(obj);
+            item?.OnSpawn(obj);
             return item;
         }
 

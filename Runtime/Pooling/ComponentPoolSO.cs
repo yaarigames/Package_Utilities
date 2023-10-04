@@ -41,9 +41,9 @@ namespace SAS.Pool
 			return false;
 		}
 
-		public override T Spawn()
+		public override T Spawn<O>(O obj)
 		{
-			T item = base.Spawn();
+			T item = base.Spawn(obj);
 			item.gameObject.SetActive(true);
 			return item;
 		}

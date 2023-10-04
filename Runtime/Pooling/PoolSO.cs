@@ -48,7 +48,7 @@ namespace SAS.Pool
             }
         }
 
-        public virtual T Spawn()
+        public virtual T Spawn<O>(O obj)
         {
             if (Available.Count == 0)
                 ExpandBy(4);
@@ -62,6 +62,11 @@ namespace SAS.Pool
             {
                 return default;
             }
+        }
+
+        public T Spawn()
+        {
+           return Spawn<object>(default);
         }
 
         public virtual void Despawn(T item)

@@ -17,6 +17,7 @@
 
     public interface IPool<T> : IDespawnablePool<T>
     {
+        T Spawn<O>(O obj);
         T Spawn();
     }
 }

@@ -6,7 +6,7 @@ namespace SAS.Pool
 {
     public interface ISpawnable
     {
-        void OnSpawn();
+        void OnSpawn<T>(T obj);
         void OnDespawn();
     }
 }
