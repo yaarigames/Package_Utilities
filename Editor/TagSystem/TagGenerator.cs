@@ -5,6 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System;
 using UnityEditorInternal;
+using System.Collections.Specialized;
 
 namespace SAS.Utilities.TagSystem.Editor
 {
@@ -12,6 +13,7 @@ namespace SAS.Utilities.TagSystem.Editor
     public class TagGenerator : EditorWindow
     {
         private static List<string> _enumValues = new List<string>();
+        private static OrderedDictionary _enumNameValueMap = new();
         private static ReorderableList _tagsList;
 
         static TagGenerator()
@@ -25,8 +27,11 @@ namespace SAS.Utilities.TagSystem.Editor
             GetWindow<TagGenerator>("Tag Generator");
             _enumValues = new List<string>();
 
+            _enumNameValueMap.Clear();
+
             foreach (string name in Enum.GetNames(typeof(Tag)))
             {
+                _enumNameValueMap.Add(name, (int)(Tag)Enum.Parse(typeof(Tag), name));
                 _enumValues.Add(name);
             }
 
@@ -83,9 +88,10 @@ namespace SAS.Utilities.TagSystem.Editor
             if (_tagsList == null)
             {
                 _enumValues = new List<string>();
-
+                _enumNameValueMap.Clear();
                 foreach (string name in Enum.GetNames(typeof(Tag)))
                 {
+                    _enumNameValueMap.Add(name, (int)(Tag)Enum.Parse(typeof(Tag), name));
                     _enumValues.Add(name);
                 }
 
@@ -165,9 +171,25 @@ namespace SAS.Utilities.TagSystem.Editor
             content += "public enum " + enumName + "\n";
             content += "\t{\n";
 
+            int index = 0;
             foreach (string value in enumValues)
             {
-                content += "\t\t" + value + ",\n";
+                int val = 0;
+                if (_enumNameValueMap.Contains(value))
+                    val = (int)_enumNameValueMap[value];
+                else
+                {
+                    try
+                    {
+                        val = (int)_enumNameValueMap[index];
+                    }
+                    catch
+                    {
+                        val = index;
+                    }
+                }
+                index++;
+                content += "\t\t" + value + " = " + val + ",\n";
             }
 
             content += "\t}\n}";

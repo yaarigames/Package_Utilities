@@ -1,6 +1,10 @@
 {
   "name": "com.sas.utilities",
+<<<<<<< HEAD
   "version": "0.0.2",
+=======
+  "version": "0.0.3",
+>>>>>>> c2d5663712fe1010173c379455841f5551ef13e5
   "displayName": "SAS Utilities",
   "unity": "2018.4",
   "hideInEditor": true,
