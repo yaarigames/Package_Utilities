@@ -41,7 +41,7 @@ namespace SAS.Utilities.TagSystem
              { typeof(FieldRequiresParentAttribute), (comp, type, tag, includeInactive) => comp.GetComponentsInParent(type, tag, includeInactive) },
         };
 
-        internal static Dictionary<string, IContext> _cachedContext = new Dictionary<string, IContext>();
+        internal static Dictionary<string, IContextBinder> _cachedContext = new Dictionary<string, IContextBinder>();
 
         public static void Initialize(this Component component, object instance = null)
         {
@@ -115,7 +115,7 @@ namespace SAS.Utilities.TagSystem
             return array;
         }
 
-        private static bool TryGetContext(GameObject gameObject, out IContext context)
+        private static bool TryGetContext(GameObject gameObject, out IContextBinder context)
         {
             if (!_cachedContext.TryGetValue(gameObject.scene.name, out context))
             {
@@ -123,7 +123,7 @@ namespace SAS.Utilities.TagSystem
                 var rootObjects = scene.GetRootGameObjects();
                 foreach (var rootObject in rootObjects)
                 {
-                    if (rootObject.TryGetComponent<IContext>(out context))
+                    if (rootObject.TryGetComponent<IContextBinder>(out context))
                     {
                         _cachedContext[scene.name] = context;
                         return true;
@@ -134,7 +134,7 @@ namespace SAS.Utilities.TagSystem
             return false;
         }
 
-        private static void Inject(IContext context, object instance, FieldInfo field, InjectAttribute requirement)
+        private static void Inject(IContextBinder context, object instance, FieldInfo field, InjectAttribute requirement)
         {
             if (context == null)
             {

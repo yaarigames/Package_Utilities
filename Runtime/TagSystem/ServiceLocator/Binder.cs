@@ -95,7 +95,7 @@ namespace SAS.Utilities.TagSystem
             return true;
         }
 
-        private void Add(Type type, object instance, Tag tag = Tag.None)
+        public void Add(Type type, object instance, Tag tag = Tag.None)
         {
             var key = GetKey(type, tag);
             if (!_cachedBindings.TryGetValue(key,  out object cachedInstance))

@@ -126,10 +126,15 @@ namespace SAS.Utilities.TagSystem
 
         public static Tag GetTag(this Component component)
         {
-            if(component.GetComponent<Tagger>() == null)
+            var c = component.GetComponent<Tagger>();
+            if (c == null)
                 return Tag.None;
-
-            return component.GetComponent<Tagger>().Find(component).Value;
+            
+            var taggerTag = c.Find(component);
+            if (taggerTag == null)
+                return Tag.None;
+            
+            return taggerTag.Value;
         }
     }
 }
