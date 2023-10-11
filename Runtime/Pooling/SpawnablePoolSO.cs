@@ -19,12 +19,24 @@ namespace SAS.Pool
         public override Poolable Spawn<O>(O obj, MonoBase parent = null)
         {
             var item = base.Spawn(obj, parent);
-            item?.OnSpawn(obj);
+            if (item != null)
+            {
+                item.SetParent(parent);
+                item.OnSpawn(obj);
+            }
             return item;
         }
 
         public override void Despawn(Poolable item)
         {
+            if (!item.active)
+                return;
+            var children = item?.Children;
+            for (int i = children.Count - 1; i >= 0; i--)
+            {
+                (children[i] as Poolable).Despawn();
+            }
+            item.Unparent();
             base.Despawn(item);
             item.OnDespawn();
         }

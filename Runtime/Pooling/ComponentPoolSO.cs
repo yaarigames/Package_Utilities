@@ -21,7 +21,6 @@ namespace SAS.Pool
             }
         }
 
-
         public void SetParent(Transform t)
         {
             _parent = t;
@@ -43,7 +42,6 @@ namespace SAS.Pool
         public override T Spawn<O>(O data, MonoBase parent = null)
         {
             T item = base.Spawn(data, parent);
-            (item as MonoBase)?.SetParent(parent);
             item.gameObject.SetActive(true);
             return item;
         }
@@ -52,12 +50,6 @@ namespace SAS.Pool
         {
             item.transform.SetParent(PoolRoot.transform, false);
             item.gameObject.SetActive(false);
-            var children = (item as MonoBase)?.Children;
-            for (int i = children.Count - 1; i >= 0; i--)
-            {
-                (children[i] as Poolable).Despawn();
-            }
-            (item as MonoBase).Unparent();
             base.Despawn(item);
         }
     }
