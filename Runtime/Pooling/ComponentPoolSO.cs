@@ -1,64 +1,64 @@
-﻿using Codice.Client.BaseCommands.Differences;
-using SAS.Utilities.TagSystem;
-using System.Collections;
-using System.Collections.Generic;
+﻿using SAS.Utilities.TagSystem;
 using UnityEngine;
 
 namespace SAS.Pool
 {
-	public abstract class ComponentPoolSO<T> : PoolSO<T> where T : Component
-	{
-		private Transform _poolRoot;
-		private Transform _parent;
+    public abstract class ComponentPoolSO<T> : PoolSO<T> where T : Component
+    {
+        private Transform _poolRoot;
+        private Transform _parent;
 
-		private Transform PoolRoot
-		{
-			get
-			{
-				if (_poolRoot == null)
-				{
-					_poolRoot = new GameObject(name).transform;
-					_poolRoot.SetParent(_parent);
-				}
-				return _poolRoot;
-			}
-		}
+        private Transform PoolRoot
+        {
+            get
+            {
+                if (_poolRoot == null)
+                {
+                    _poolRoot = new GameObject(name).transform;
+                    _poolRoot.SetParent(_parent);
+                }
+                return _poolRoot;
+            }
+        }
 
 
-		public void SetParent(Transform t)
-		{
-			_parent = t;
-			PoolRoot.SetParent(_parent);
-		}
+        public void SetParent(Transform t)
+        {
+            _parent = t;
+            PoolRoot.SetParent(_parent);
+        }
 
-		protected override bool Create(out T item)
-		{
-			if (base.Create(out item))
-			{
-				item.transform.SetParent(PoolRoot.transform);
-				item.gameObject.SetActive(false);
-				return true;
-			}
+        protected override bool Create(out T item)
+        {
+            if (base.Create(out item))
+            {
+                item.transform.SetParent(PoolRoot.transform);
+                item.gameObject.SetActive(false);
+                return true;
+            }
 
-			return false;
-		}
+            return false;
+        }
 
-		public override T Spawn<O>(O data, MonoBase parent = null)
-		{
-			T item = base.Spawn(data, parent);
-			(item as MonoBase)?.SetParent(parent);
-			item.gameObject.SetActive(true);
-			return item;
-		}
+        public override T Spawn<O>(O data, MonoBase parent = null)
+        {
+            T item = base.Spawn(data, parent);
+            (item as MonoBase)?.SetParent(parent);
+            item.gameObject.SetActive(true);
+            return item;
+        }
 
-		public override void Despawn(T item)
-		{
-			item.transform.SetParent(PoolRoot.transform, false);
-			item.gameObject.SetActive(false);
-			var children = (item as MonoBase)?.Children;
-			foreach (var child in children)
-				Despawn(child as T);
+        public override void Despawn(T item)
+        {
+            item.transform.SetParent(PoolRoot.transform, false);
+            item.gameObject.SetActive(false);
+            var children = (item as MonoBase)?.Children;
+            for (int i = children.Count - 1; i >= 0; i--)
+            {
+                (children[i] as Poolable).Despawn();
+            }
+            (item as MonoBase).Unparent();
             base.Despawn(item);
-		}
-	}
+        }
+    }
 }

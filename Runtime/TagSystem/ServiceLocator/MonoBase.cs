@@ -10,6 +10,7 @@ namespace SAS.Utilities.TagSystem
 
         private List<MonoBase> _children = new List<MonoBase>();
         public IReadOnlyList<MonoBase> Children => _children;
+        private MonoBase _parent;
 
         protected virtual void Awake()
         {
@@ -34,12 +35,19 @@ namespace SAS.Utilities.TagSystem
 
         internal void SetParent(MonoBase parent)
         {
+            _parent = parent;
             parent?.AddChild(this);
         }
 
         private void AddChild(MonoBase monoBase)
         {
             _children.Add(monoBase);
+        }
+
+        internal void Unparent()
+        {
+            _parent?._children?.Remove(this);
+            _parent = null;
         }
     }
 }

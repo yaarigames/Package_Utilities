@@ -1,18 +1,17 @@
 using SAS.Utilities.TagSystem;
-using UnityEngine;
 
 namespace SAS.Pool
 {
     public abstract class Poolable : MonoBase
     {
-        internal SpawnablePoolSO ObjectPool { get; set; }
+        internal ComponentPoolSO<Poolable> ObjectPool { get; set; }
         private ISpawnable[] _spawnables;
         protected override void Awake()
         {
             _spawnables = GetComponentsInChildren<ISpawnable>();
         }
 
-        public void Destroy()
+        public void Despawn()
         {
             if (ObjectPool != null)
                 ObjectPool.Despawn(this);
