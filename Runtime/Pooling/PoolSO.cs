@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SAS.Utilities.TagSystem;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -48,7 +49,7 @@ namespace SAS.Pool
             }
         }
 
-        public virtual T Spawn<O>(O obj)
+        public virtual T Spawn<O>(O data, MonoBase parent = null)
         {
             if (Available.Count == 0)
                 ExpandBy(4);
@@ -64,9 +65,9 @@ namespace SAS.Pool
             }
         }
 
-        public T Spawn()
+        public T Spawn(MonoBase parent = null)
         {
-           return Spawn<object>(default);
+           return Spawn<object>(default,parent);
         }
 
         public virtual void Despawn(T item)

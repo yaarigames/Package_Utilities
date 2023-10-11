@@ -1,4 +1,6 @@
-﻿namespace SAS.Pool
+﻿using SAS.Utilities.TagSystem;
+
+namespace SAS.Pool
 {
     public interface IPool
     {
@@ -17,7 +19,7 @@
 
     public interface IPool<T> : IDespawnablePool<T>
     {
-        T Spawn<O>(O obj);
-        T Spawn();
+        T Spawn<O>(O data, MonoBase parent);
+        T Spawn(MonoBase parent);
     }
 }

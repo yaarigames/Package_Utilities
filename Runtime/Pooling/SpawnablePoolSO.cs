@@ -1,3 +1,4 @@
+using SAS.Utilities.TagSystem;
 using UnityEngine;
 
 namespace SAS.Pool
@@ -15,9 +16,9 @@ namespace SAS.Pool
             return item != null;
         }
 
-        public override Poolable Spawn<O>(O obj)
+        public override Poolable Spawn<O>(O obj, MonoBase parent = null)
         {
-            var item = base.Spawn(obj);
+            var item = base.Spawn(obj, parent);
             item?.OnSpawn(obj);
             return item;
         }

@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using Codice.Client.BaseCommands.Differences;
+using SAS.Utilities.TagSystem;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -41,9 +43,10 @@ namespace SAS.Pool
 			return false;
 		}
 
-		public override T Spawn<O>(O obj)
+		public override T Spawn<O>(O data, MonoBase parent = null)
 		{
-			T item = base.Spawn(obj);
+			T item = base.Spawn(data, parent);
+			(item as MonoBase)?.SetParent(parent);
 			item.gameObject.SetActive(true);
 			return item;
 		}
@@ -52,7 +55,10 @@ namespace SAS.Pool
 		{
 			item.transform.SetParent(PoolRoot.transform, false);
 			item.gameObject.SetActive(false);
-			base.Despawn(item);
+			var children = (item as MonoBase)?.Children;
+			foreach (var child in children)
+				Despawn(child as T);
+            base.Despawn(item);
 		}
 	}
 }
