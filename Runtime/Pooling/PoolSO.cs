@@ -78,7 +78,7 @@ namespace SAS.Pool
 
         public void Clear()
         {
-            throw new System.NotImplementedException();
+            Available.Clear();
         }
     }
 }
