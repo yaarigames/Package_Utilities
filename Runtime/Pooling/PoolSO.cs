@@ -49,7 +49,7 @@ namespace SAS.Pool
             }
         }
 
-        public virtual T Spawn<O>(O data, MonoBase parent = null)
+        public virtual T Spawn(object data = null, MonoBase parent = null)
         {
             if (Available.Count == 0)
                 ExpandBy(4);
@@ -65,11 +65,6 @@ namespace SAS.Pool
             }
         }
 
-        public T Spawn(MonoBase parent = null)
-        {
-           return Spawn<object>(default,parent);
-        }
-
         public virtual void Despawn(T item)
         {
             --_active;
@@ -78,7 +73,7 @@ namespace SAS.Pool
 
         public void Clear()
         {
-            throw new System.NotImplementedException();
+            Available.Clear();
         }
     }
 }

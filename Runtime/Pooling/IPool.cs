@@ -19,7 +19,6 @@ namespace SAS.Pool
 
     public interface IPool<T> : IDespawnablePool<T>
     {
-        T Spawn<O>(O data, MonoBase parent);
-        T Spawn(MonoBase parent);
+        T Spawn(object data, MonoBase parent);
     }
 }

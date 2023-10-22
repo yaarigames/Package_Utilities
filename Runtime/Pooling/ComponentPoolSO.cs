@@ -39,7 +39,7 @@ namespace SAS.Pool
             return false;
         }
 
-        public override T Spawn<O>(O data, MonoBase parent = null)
+        public override T Spawn(object data = null, MonoBase parent = null)
         {
             T item = base.Spawn(data, parent);
             item.gameObject.SetActive(true);

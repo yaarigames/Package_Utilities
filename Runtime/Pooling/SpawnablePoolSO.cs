@@ -16,13 +16,13 @@ namespace SAS.Pool
             return item != null;
         }
 
-        public override Poolable Spawn<O>(O obj, MonoBase parent = null)
+        public override Poolable Spawn(object data = null, MonoBase parent = null)
         {
-            var item = base.Spawn(obj, parent);
+            var item = base.Spawn(data, parent);
             if (item != null)
             {
                 item.SetParent(parent);
-                item.OnSpawn(obj);
+                item.OnSpawn(data);
             }
             return item;
         }
