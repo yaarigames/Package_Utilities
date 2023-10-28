@@ -21,7 +21,7 @@ namespace SAS.Utilities.TagSystem
             [SerializeField] private Tag m_Tag;
             public Type InterfaceType => Type.GetType(m_Interface);
             public Tag Tag => m_Tag;
-            public object CreateInstance(Binder binder)
+            public object CreateInstance(IContextBinder contextBinder)
             {
                 object instance = default;
                 Type type = Type.GetType(m_Type);
@@ -40,49 +40,51 @@ namespace SAS.Utilities.TagSystem
                 }
                 else
                 {
-                    instance = Activator.CreateInstance(Type.GetType(m_Type), new[] { binder });
-                   
+                    instance = Activator.CreateInstance(Type.GetType(m_Type), new[] { contextBinder });
+
                 }
 
-                InvokeInjecttionEvent((IBindable)instance);
+                InvokeInjectionEvent((IBindable)instance);
                 return instance;
             }
 
-            private void InvokeInjecttionEvent(IBindable bindable)
+            private void InvokeInjectionEvent(IBindable bindable)
             {
                 bindable.OnInstanceCreated();
             }
         }
 
-       
+
 
         [SerializeField] private Binding[] m_Bindings;
-        private Dictionary<string, object> _cachedBindings = new Dictionary<string, object>();
+        private Dictionary<Key, object> _cachedBindings = new Dictionary<Key, object>();
+        internal IReadOnlyDictionary<Key, object> CachedBindings => _cachedBindings;
 
-        private string GetKey(Type type, Tag tag)
+        private Key GetKey(Type type, Tag tag)
         {
-            return $"{type.Name}{tag.ToString()}";
+            return new Key { type = type, tag = tag };
         }
 
-        public T GetOrCreate<T>(Tag tag = Tag.None)
+        internal T GetOrCreate<T>(IContextBinder contextBinder, Tag tag = Tag.None)
         {
-            return (T)GetOrCreate(typeof(T), tag);
+            return (T)GetOrCreate(contextBinder, typeof(T), tag);
         }
 
-        public object GetOrCreate(Type type, Tag tag = Tag.None)
+        internal object GetOrCreate(IContextBinder contextBinder, Type type, Tag tag = Tag.None)
         {
             var key = GetKey(type, tag);
             if (!_cachedBindings.TryGetValue(key, out var value))
             {
-                var instance = CreateInstance(type, tag);
-                Add(type, instance, tag);
+                var instance = CreateInstance(contextBinder, type, tag);
+                if (instance != null)
+                    Add(type, instance, tag);
                 return instance;
             }
 
             return value;
         }
 
-        public bool TryGet(Type type, out object instance, Tag tag = Tag.None)
+        internal bool TryGet(Type type, out object instance, Tag tag = Tag.None)
         {
             var key = GetKey(type, tag);
             if (!_cachedBindings.TryGetValue(key, out instance))
@@ -95,10 +97,10 @@ namespace SAS.Utilities.TagSystem
             return true;
         }
 
-        public void Add(Type type, object instance, Tag tag = Tag.None)
+        internal void Add(Type type, object instance, Tag tag = Tag.None)
         {
             var key = GetKey(type, tag);
-            if (!_cachedBindings.TryGetValue(key,  out object cachedInstance))
+            if (!_cachedBindings.TryGetValue(key, out object cachedInstance))
                 _cachedBindings.Add(key, instance);
 
             var baseTypes = type.GetInterfaces();
@@ -109,10 +111,22 @@ namespace SAS.Utilities.TagSystem
                 Add(baseType, instance, tag);
         }
 
-        private object CreateInstance(Type type, Tag tag)
+        internal void CreateAllInstance(IContextBinder contextBinder)
+        {
+            foreach (var binding in m_Bindings)
+                GetOrCreate(contextBinder, binding.InterfaceType, binding.Tag);
+        }
+
+        private object CreateInstance(IContextBinder contextBinder, Type type, Tag tag)
         {
             var binding = Array.Find(m_Bindings, ele => ele.InterfaceType.Equals(type) && ele.Tag == tag);
-            return binding?.CreateInstance(this);
+            return binding?.CreateInstance(contextBinder);
+        }
+
+        internal void Clear()
+        {
+            _cachedBindings.Clear();
         }
     }
 }
+

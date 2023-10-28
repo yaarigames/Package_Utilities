@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SAS.Utilities.TagSystem
 {
@@ -9,5 +10,6 @@ namespace SAS.Utilities.TagSystem
         bool TryGet<T>(out T instance, Tag tag = Tag.None);
 
         void Add(Type type, object instance, Tag tag = Tag.None);
+        IReadOnlyDictionary<Key, object> GetAll();
     }
 }

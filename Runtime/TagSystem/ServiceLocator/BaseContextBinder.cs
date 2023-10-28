@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SAS.Utilities.TagSystem
 {
     public class BaseContextBinder : MonoBase, IContextBinder
     {
+        [SerializeField] public bool m_EarlyBinding = false;
         [Tooltip("If True, this GameObject will be marked as DontDestroyOnLoad. Make Sure Only one context is there for which  isCrossContextBinder is true")]
         [SerializeField] private bool m_IsCrossContextBinder;
         [SerializeField] public Binder m_Binder;
@@ -21,12 +23,14 @@ namespace SAS.Utilities.TagSystem
                 else
                     Debug.LogWarning($"There is already an CrossContextBinder wit the name {context.GetType().Name} ");
             }
+            if (m_EarlyBinding)
+                m_Binder.CreateAllInstance(this);
             base.Awake();
         }
 
         object IContextBinder.GetOrCreate(Type type, Tag tag)
         {
-            return m_Binder.GetOrCreate(type, tag);
+            return m_Binder.GetOrCreate(this, type, tag);
         }
 
 
@@ -51,6 +55,18 @@ namespace SAS.Utilities.TagSystem
         void IContextBinder.Add(Type type, object instance, Tag tag)
         {
             m_Binder.Add(type, instance, tag);
+        }
+
+        IReadOnlyDictionary<Key, object> IContextBinder.GetAll()
+        {
+            return m_Binder.CachedBindings;
+        }
+
+        protected override void OnDestroy()
+        {
+            ComponentExtensions._cachedContext.Remove(gameObject.scene.name);
+            m_Binder?.Clear();
+            base.OnDestroy();
         }
     }
 }

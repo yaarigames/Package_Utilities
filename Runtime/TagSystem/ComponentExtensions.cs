@@ -123,7 +123,7 @@ namespace SAS.Utilities.TagSystem
                 var rootObjects = scene.GetRootGameObjects();
                 foreach (var rootObject in rootObjects)
                 {
-                    if (rootObject.TryGetComponent<IContextBinder>(out context))
+                    if (rootObject.TryGetComponent(out context))
                     {
                         _cachedContext[scene.name] = context;
                         return true;
