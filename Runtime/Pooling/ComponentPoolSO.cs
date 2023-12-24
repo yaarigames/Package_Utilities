@@ -15,6 +15,8 @@ namespace SAS.Pool
                 if (_poolRoot == null)
                 {
                     _poolRoot = new GameObject(name).transform;
+                    var poolClearer = _poolRoot.AddComponent<PoolClearer>();
+                    poolClearer.Init(this);
                     _poolRoot.SetParent(_parent);
                 }
                 return _poolRoot;
