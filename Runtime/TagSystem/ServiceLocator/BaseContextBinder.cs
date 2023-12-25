@@ -64,7 +64,8 @@ namespace SAS.Utilities.TagSystem
 
         protected override void OnDestroy()
         {
-            ComponentExtensions._cachedContext.Remove(gameObject.scene.name);
+            if (gameObject != null && gameObject.scene != null && !string.IsNullOrEmpty(gameObject.scene.name))
+                ComponentExtensions._cachedContext.Remove(gameObject?.scene.name);
             m_Binder?.Clear();
             base.OnDestroy();
         }
