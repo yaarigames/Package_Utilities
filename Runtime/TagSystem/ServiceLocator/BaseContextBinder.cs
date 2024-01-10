@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace SAS.Utilities.TagSystem
 {
+    [DefaultExecutionOrder(-100)]
     public class BaseContextBinder : MonoBase, IContextBinder
     {
         [SerializeField] public bool m_EarlyBinding = false;
