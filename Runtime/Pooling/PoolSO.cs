@@ -71,7 +71,7 @@ namespace SAS.Pool
             Available.Push(item);
         }
 
-        public void Clear()
+        public virtual void Clear()
         {
             Available.Clear();
         }

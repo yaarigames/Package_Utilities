@@ -54,5 +54,17 @@ namespace SAS.Pool
             item.gameObject.SetActive(false);
             base.Despawn(item);
         }
+
+        public override void Clear()
+        {
+            foreach (var poolObject in Available)
+            {
+                if (poolObject != null)
+                {
+                    Destroy(poolObject.gameObject);
+                }
+            }
+            base.Clear();
+        }
     }
 }

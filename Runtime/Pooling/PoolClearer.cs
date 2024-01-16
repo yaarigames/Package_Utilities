@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SAS.Pool
 {
-    internal sealed class PoolClearer : MonoBehaviour
+    public sealed class PoolClearer : MonoBehaviour
     {
         private IPool _pool;
 
@@ -17,6 +17,11 @@ namespace SAS.Pool
         }
 
         void OnDestroy()
+        {
+           Clear();
+        }
+
+        public void Clear()
         {
             _pool.Clear();
         }
