@@ -5,6 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System;
 using UnityEditorInternal;
+using UnityEditor.Compilation;
 
 namespace SAS.Utilities.TagSystem.Editor
 {
@@ -17,6 +18,26 @@ namespace SAS.Utilities.TagSystem.Editor
         static TagGenerator()
         {
             EditorApplication.delayCall += GenerateEnumFile;
+            CompilationPipeline.assemblyCompilationFinished += OnAssemblyCompilationFinished;
+        }
+
+        private static void OnAssemblyCompilationFinished(string assemblyPath, CompilerMessage[] messages)
+        {
+            bool hasErrors = false;
+
+            foreach (var message in messages)
+            {
+                if (message.type == CompilerMessageType.Error)
+                {
+                    hasErrors = true;
+                    Debug.LogError($"Compilation Error in {assemblyPath}: {message.message}");
+                }
+            }
+
+            if (hasErrors)
+            {
+                GenerateEnumFile();
+            }
         }
 
         [MenuItem("Assets/Create/SAS/Tag Generator")]
