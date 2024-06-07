@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace SAS.Utilities.TagSystem
 {
@@ -18,6 +19,7 @@ namespace SAS.Utilities.TagSystem
             { typeof(FieldRequiresSelfAttribute), (comp, type, includeInactive) => comp.GetComponent(type) },
             { typeof(FieldRequiresChildAttribute), (comp, type, includeInactive) => comp.GetComponentInChildren(type, includeInactive) },
             { typeof(FieldRequiresParentAttribute), (comp, type, includeInactive) => comp.GetComponentInParent(type) },
+            { typeof(FieldRequiresInSceneAttribute), (comp, type, includeInactive) => GetObjectWithComponentInScene(type,Tag.None, includeInactive) },
         };
 
         private static readonly Dictionary<Type, Func<Component, Type, Tag, bool, Component>> _componentWithTagFetchers = new Dictionary<Type, Func<Component, Type, Tag, bool, Component>>
@@ -25,6 +27,7 @@ namespace SAS.Utilities.TagSystem
             { typeof(FieldRequiresSelfAttribute), (comp, type, tag, includeInactive) => comp.GetComponent(type, tag) },
             { typeof(FieldRequiresChildAttribute), (comp, type, tag, includeInactive) => comp.GetComponentInChildren(type, tag, includeInactive) },
             { typeof(FieldRequiresParentAttribute), (comp, type, tag, includeInactive) => comp.GetComponentInParent(type, tag, includeInactive) },
+            { typeof(FieldRequiresInSceneAttribute), (comp, type, tag,includeInactive) => GetObjectWithComponentInScene(type, tag, includeInactive) },
         };
 
         private static readonly Dictionary<Type, Func<Component, Type, bool, Component[]>> _componentsFetchers = new Dictionary<Type, Func<Component, Type, bool, Component[]>>
@@ -32,6 +35,7 @@ namespace SAS.Utilities.TagSystem
              { typeof(FieldRequiresSelfAttribute), (comp, type, includeInactive) => comp.GetComponents(type) },
              { typeof(FieldRequiresChildAttribute), (comp, type, includeInactive) => comp.GetComponentsInChildren(type, includeInactive) },
              { typeof(FieldRequiresParentAttribute), (comp, type, includeInactive) => comp.GetComponentsInParent(type, includeInactive) },
+             { typeof(FieldRequiresInSceneAttribute), (comp, type, includeInactive) => GetObjectsWithComponentInScene(type,Tag.None, includeInactive) },
         };
 
         private static Dictionary<Type, Func<Component, Type, Tag, bool, Component[]>> _componentsWithTagFetchers = new Dictionary<Type, Func<Component, Type, Tag, bool, Component[]>>
@@ -39,6 +43,7 @@ namespace SAS.Utilities.TagSystem
              { typeof(FieldRequiresSelfAttribute), (comp, type, tag, includeInactive) => comp.GetComponents(type, tag) },
              { typeof(FieldRequiresChildAttribute), (comp, type, tag, includeInactive) => comp.GetComponentsInChildren(type, tag, includeInactive) },
              { typeof(FieldRequiresParentAttribute), (comp, type, tag, includeInactive) => comp.GetComponentsInParent(type, tag, includeInactive) },
+             { typeof(FieldRequiresInSceneAttribute), (comp, type, tag,includeInactive) => GetObjectsWithComponentInScene(type, tag, includeInactive) },
         };
 
         internal static Dictionary<string, IContextBinder> _cachedContext = new Dictionary<string, IContextBinder>();
@@ -167,11 +172,34 @@ namespace SAS.Utilities.TagSystem
                 }
                 else
                 {
-                   var value = crossContext.GetOrCreate(field.FieldType, requirement.tag);
+                    var value = crossContext.GetOrCreate(field.FieldType, requirement.tag);
                     if (value != null)
                         field.SetValue(instance, value);
                 }
             }
+        }
+
+        private static Component GetObjectWithComponentInScene(Type type, Tag tag, bool includeInactive = false)
+        {
+            foreach (GameObject root in SceneManager.GetActiveScene().GetRootGameObjects())
+            {
+                var result = root.transform.GetComponentInChildren(type, tag, includeInactive);
+                if (result != null)
+                    return result;
+
+            }
+            return null;
+        }
+
+        private static Component[] GetObjectsWithComponentInScene(Type type, Tag tag, bool includeInactive = false)
+        {
+            List<Component> result = new List<Component>();
+            foreach (GameObject root in SceneManager.GetActiveScene().GetRootGameObjects())
+            {
+                var components = root.transform.GetComponentsInChildren(type, tag, includeInactive);
+                result.AddRange(components);
+            }
+            return result.ToArray();
         }
     }
 }

@@ -39,6 +39,12 @@ namespace SAS.Utilities.TagSystem
 #if UNITY_EDITOR
         private void OnValidate()
         {
+            InitializeProperties();
+        }
+
+        [ContextMenu("Initialize")]
+        private void InitializeProperties()
+        {
             this.Initialize();
         }
 #endif
