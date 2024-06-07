@@ -12,7 +12,7 @@ namespace SAS.Utilities.TagSystem
         [SerializeField] private bool m_IsCrossContextBinder;
         [SerializeField] public Binder m_Binder;
 
-        protected override void Awake()
+        void Awake()
         {
             if (m_IsCrossContextBinder)
             {
@@ -26,7 +26,6 @@ namespace SAS.Utilities.TagSystem
             }
             if (m_EarlyBinding)
                 m_Binder.CreateAllInstance(this);
-            base.Awake();
         }
 
         object IContextBinder.GetOrCreate(Type type, Tag tag)
