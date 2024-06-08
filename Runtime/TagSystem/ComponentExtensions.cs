@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -93,6 +93,23 @@ namespace SAS.Utilities.TagSystem
             }
         }
 
+        public static void InjectFieldBindings(this Component component, object instance = null)
+        {
+            instance = instance ?? component;
+            var allFields = GetAllFields(instance);
+
+            if (!TryGetContext(component.gameObject, out var context))
+                Debug.LogError("No Context binder found in the scene");
+
+            foreach (var field in allFields)
+            {
+                var requirement = field.GetCustomAttribute<InjectAttribute>(false);
+                if (requirement != null)
+                    Inject(context, instance, field, requirement);
+            }
+        }
+
+
         private static IEnumerable<FieldInfo> GetAllFields(this object instance)
         {
             var instanceType = instance.GetType();
@@ -135,8 +152,9 @@ namespace SAS.Utilities.TagSystem
                     }
 
                 }
+                return false;
             }
-            return false;
+            return true;
         }
 
         private static void Inject(IContextBinder context, object instance, FieldInfo field, InjectAttribute requirement)
