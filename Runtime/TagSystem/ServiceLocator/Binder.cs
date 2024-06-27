@@ -28,21 +28,20 @@ namespace SAS.Utilities.TagSystem
 
                 if (type.IsSubclassOf(typeof(MonoBehaviour)))
                 {
-                    var result = GameObject.FindObjectOfType(type);
-                    if (result != null)
+                    var results = GameObject.FindObjectsOfType(type);
+                    foreach (var result in results)
                     {
+
                         instance = ((Component)result).GetComponent(type, Tag);
-                        if (instance == null)
-                            Debug.LogError($"No GameObject having component attached of the type:  {m_Type} with  tag: {m_Tag} found");
+                        if (instance != null)
+                            break;
                     }
-                    else
+                    if (instance == null)
                         Debug.LogError($"No GameObject having component attached of the type:  {m_Type} with  tag: {m_Tag} found");
                 }
                 else
-                {
                     instance = Activator.CreateInstance(Type.GetType(m_Type), new[] { contextBinder });
 
-                }
 
                 InvokeInjectionEvent((IBindable)instance);
                 return instance;
