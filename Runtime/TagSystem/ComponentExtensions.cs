@@ -139,7 +139,8 @@ namespace SAS.Utilities.TagSystem
 
         private static bool TryGetContext(GameObject gameObject, out IContextBinder context)
         {
-            if (!_cachedContext.TryGetValue(gameObject.scene.name, out context))
+            context = null;
+            if (gameObject.scene.isLoaded && !_cachedContext.TryGetValue(gameObject.scene.name, out context))
             {
                 var scene = gameObject.scene;
                 var rootObjects = scene.GetRootGameObjects();

@@ -9,6 +9,17 @@ namespace SAS.Utilities.TagSystem
         public IReadOnlyList<MonoBase> Children => _children;
         private MonoBase _parent;
 
+        protected virtual void Awake()
+        {
+            //todo: need to remove this
+            this.Initialize();
+        }
+
+        protected virtual void Start()
+        {
+            //todo: need to remove this
+            this.Initialize();
+        }
 
         protected virtual void OnDestroy()
         {
