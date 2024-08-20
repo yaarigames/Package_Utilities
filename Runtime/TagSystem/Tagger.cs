@@ -72,5 +72,12 @@ namespace SAS.Utilities.TagSystem
 			foreach (var tag in tags)
 				m_Tags.Remove(tag);
 		}
-	}
+
+        public void LogAllTags(Component component)
+        {
+            var tags = m_Tags.FindAll(ele => ele.Component == component);
+            foreach (var tag in tags)
+               Debug.Log(tag.Value);
+        }
+    }
 }

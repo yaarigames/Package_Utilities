@@ -39,5 +39,13 @@ namespace SAS.Utilities.TagSystem.Editor
             UnityEditor.EditorUtility.SetDirty(self);
             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
         }
+
+        [MenuItem("CONTEXT/Component/Log Tags")]
+        private static void LogTags(MenuCommand command)
+        {
+            var self = (Component)command.context;
+            var tagger = self.gameObject.GetComponent<Tagger>();
+            tagger.LogAllTags(self);
+        }
     }
 }
