@@ -51,4 +51,10 @@ public class EventBinding<T> : IEventBinding<T> where T : IEvent
         this.onEventNoArgs = onEventNoArgs;
         this.priority = priority;
     }
+
+    public void Add(Action onEvent) => onEventNoArgs += onEvent;
+    public void Remove(Action onEvent) => onEventNoArgs -= onEvent;
+
+    public void Add(Action<T> onEvent) => this.onEvent += onEvent;
+    public void Remove(Action<T> onEvent) => this.onEvent -= onEvent;
 }
