@@ -5,17 +5,12 @@ public class EventBindingComparer<T> : IComparer<IEventBinding<T>> where T : IEv
 {
     public int Compare(IEventBinding<T> x, IEventBinding<T> y)
     {
-        // Compare by priority first (higher priority first)
+        // First, compare the bindings by priority (higher priority comes first)
         int priorityComparison = y.Priority.CompareTo(x.Priority);
         if (priorityComparison != 0)
             return priorityComparison;
 
-        // If priorities are the same, compare by the OnEvent delegate (ensure uniqueness)
-        int onEventComparison = Comparer<Action<T>>.Default.Compare(x.OnEvent, y.OnEvent);
-        if (onEventComparison != 0)
-            return onEventComparison;
-
-        // If OnEvent is the same, compare OnEventNoArgs as a tie-breaker
-        return Comparer<Action>.Default.Compare(x.OnEventNoArgs, y.OnEventNoArgs);
+        // If priorities are the same, maintain the registration order
+        return x.RegistrationOrder.CompareTo(y.RegistrationOrder);
     }
 }
