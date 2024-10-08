@@ -6,7 +6,7 @@ namespace SAS.Utilities
 	{
         private static T mInstance = null;
         
-        public bool _PersistentOnSceneChange = false;
+        public bool _PersistentOnSceneChange = true;
 		
         protected AutoInstantiateSingleton() { }
 
