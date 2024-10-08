@@ -20,5 +20,10 @@ namespace SAS.Utilities
         {
             Instance.StopCoroutine(coroutine);
         }
+
+        public static void Stop(string coroutine)
+        {
+            Instance.StopCoroutine(coroutine);
+        }
     }
 }
