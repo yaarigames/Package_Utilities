@@ -2,7 +2,7 @@
 using UnityEngine.Networking;
 using SAS.Utilities;
 
-namespace SAS.WebServiceManagment
+namespace SAS.WebServiceManagement
 {
     public static partial class WebService
     {

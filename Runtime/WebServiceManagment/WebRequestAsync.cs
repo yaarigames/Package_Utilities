@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System;
 
-namespace SAS.WebServiceManagment
+namespace SAS.WebServiceManagement
 {
     public partial class WebRequest
     {

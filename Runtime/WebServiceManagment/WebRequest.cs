@@ -4,7 +4,7 @@ using System;
 using UnityEngine.Networking;
 using Newtonsoft.Json;
 
-namespace SAS.WebServiceManagment
+namespace SAS.WebServiceManagement
 {
     public partial class WebRequest
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace SAS.WebServiceManagment
+namespace SAS.WebServiceManagement
 {
     public class RequestData
     {

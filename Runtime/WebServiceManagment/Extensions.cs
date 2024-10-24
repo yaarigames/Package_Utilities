@@ -4,7 +4,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace SAS.WebServiceManagment
+namespace SAS.WebServiceManagement
 {
     public static class Extensions
     {
@@ -105,7 +105,7 @@ namespace SAS.WebServiceManagment
 
         public static bool IsValidRequest(this UnityWebRequest request, RequestData requestData)
         {
-            return request.isDone && !request.isNetworkError && (!request.isHttpError || requestData.IgnoreHttpException);
+            return request.isDone && request.result != UnityWebRequest.Result.ConnectionError && (request.result != UnityWebRequest.Result.ProtocolError || requestData.IgnoreHttpException);
         }
     }
 }

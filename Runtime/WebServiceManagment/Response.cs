@@ -1,14 +1,14 @@
 ﻿using System;
 using UnityEngine.Networking;
 
-namespace SAS.WebServiceManagment
+namespace SAS.WebServiceManagement
 {
     public class Response
     {
         public UnityWebRequest Request { get; private set; }
         public long StatusCode { get => Request.responseCode; }
-        public bool IsHttpError { get => Request.isHttpError; }
-        public bool IsNetworkError { get => Request.isNetworkError; }
+        public bool IsHttpError { get => Request.result== UnityWebRequest.Result.ProtocolError; }
+        public bool IsNetworkError { get => Request.result == UnityWebRequest.Result.ConnectionError; }
         public string Error { get => Request.error; }
 
         public byte[] Data

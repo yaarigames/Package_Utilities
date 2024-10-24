@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace SAS.WebServiceManagment
+namespace SAS.WebServiceManagement
 {
     public class CreateRoom_ReqBody
     {

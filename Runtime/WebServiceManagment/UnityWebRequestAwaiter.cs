@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace SAS.WebServiceManagment
+namespace SAS.WebServiceManagement
 {
     public class UnityWebRequestAwaiter : INotifyCompletion
     {

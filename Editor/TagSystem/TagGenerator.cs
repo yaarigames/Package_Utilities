@@ -138,7 +138,7 @@ namespace SAS.Utilities.TagSystem.Editor
             if (!File.Exists(assemblyDefinitionRefPath))
             {
                 EmptyTempTagFile("TempTag");
-                string guid = GetAssemblyUitilitiesDefinitionAssetGuid();
+                string guid = GetAssemblyUtilitiesDefinitionAssetGuid();
                 string content = "{\r\n    \"reference\":\"GUID:" + guid + "\"\r\n}";
 
 
@@ -209,7 +209,7 @@ namespace SAS.Utilities.TagSystem.Editor
             return name;
         }
 
-        private static string GetAssemblyUitilitiesDefinitionAssetGuid()
+        private static string GetAssemblyUtilitiesDefinitionAssetGuid()
         {
             string[] guids = AssetDatabase.FindAssets("t:AssemblyDefinitionAsset");
 
