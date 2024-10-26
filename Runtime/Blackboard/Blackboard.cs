@@ -83,6 +83,8 @@ namespace SAS.Utilities.BlackboardSystem
             }
 
             value = default;
+            UnityEngine.Debug.LogError($"Key not found: {key}");
+
             return false;
         }
 

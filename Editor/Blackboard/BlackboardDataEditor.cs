@@ -30,13 +30,17 @@ namespace SAS.Utilities.BlackboardSystem.Editor
                 var keyName = element.FindPropertyRelative("keyName");
                 var valueType = element.FindPropertyRelative("valueType");
                 var value = element.FindPropertyRelative("value");
+                var readOnly = element.FindPropertyRelative("readOnly");
 
                 var keyNameRect = new Rect(rect.x, rect.y, rect.width * 0.3f, EditorGUIUtility.singleLineHeight);
                 var valueTypeRect = new Rect(rect.x + rect.width * 0.3f, rect.y, rect.width * 0.3f, EditorGUIUtility.singleLineHeight);
-                var valueRect = new Rect(rect.x + rect.width * 0.6f, rect.y, rect.width * 0.4f, EditorGUIUtility.singleLineHeight);
+                var readOnlyWidth = 20f; // Fixed width for the readOnly checkbox
+                var valueRect = new Rect(rect.x + rect.width * 0.6f, rect.y, rect.width * 0.4f - readOnlyWidth, EditorGUIUtility.singleLineHeight);
+                var readOnlyRect = new Rect(rect.x + rect.width - readOnlyWidth / 1.25f, rect.y, readOnlyWidth, EditorGUIUtility.singleLineHeight);
 
                 EditorGUI.PropertyField(keyNameRect, keyName, GUIContent.none);
                 EditorGUI.PropertyField(valueTypeRect, valueType, GUIContent.none);
+                EditorGUI.PropertyField(readOnlyRect, readOnly, GUIContent.none);
 
                 switch ((AnyValue.ValueType)valueType.enumValueIndex)
                 {
@@ -59,6 +63,11 @@ namespace SAS.Utilities.BlackboardSystem.Editor
                     case AnyValue.ValueType.Vector3:
                         var vec3Value = value.FindPropertyRelative("vector3Value");
                         EditorGUI.PropertyField(valueRect, vec3Value, GUIContent.none);
+                        break;
+                    case AnyValue.ValueType.ScriptableObject:
+                        readOnly.boolValue = true;
+                        var scriptableObjectValue = value.FindPropertyRelative("scriptableObjectValue");
+                        EditorGUI.PropertyField(valueRect, scriptableObjectValue, GUIContent.none);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
