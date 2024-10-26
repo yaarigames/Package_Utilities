@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace SAS.Utilities.BlackboardSystem
 {
@@ -76,10 +77,20 @@ namespace SAS.Utilities.BlackboardSystem
 
         public bool TryGetValue<T>(BlackboardKey key, out T value)
         {
-            if (entries.TryGetValue(key, out var entry) && entry is BlackboardEntry<T> castedEntry)
+            if (entries.TryGetValue(key, out var entry))
             {
-                value = castedEntry.Value;
-                return true;
+
+                if (entry is BlackboardEntry<T> castedEntry)
+                {
+                    value = castedEntry.Value;
+                    return true;
+                }
+
+                if (entry is BlackboardEntry<ScriptableObject> objectEntry)
+                {
+                    value = (T)(object)objectEntry.Value; //todo:this might throw type cast exception. handle it gracefully
+                    return true;
+                }
             }
 
             value = default;
