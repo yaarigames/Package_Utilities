@@ -26,23 +26,6 @@ namespace SAS.Utilities.BlackboardSystem
         public static bool operator !=(BlackboardKey lhs, BlackboardKey rhs) => !(lhs == rhs);
     }
 
-    [Serializable]
-    public class BlackboardEntry<T>
-    {
-        public BlackboardKey Key { get; }
-        public T Value { get; }
-        public Type ValueType { get; }
-
-        public BlackboardEntry(BlackboardKey key, T value)
-        {
-            Key = key;
-            Value = value;
-            ValueType = typeof(T);
-        }
-
-        public override bool Equals(object obj) => obj is BlackboardEntry<T> other && other.Key == Key;
-        public override int GetHashCode() => Key.GetHashCode();
-    }
 
     [Serializable]
     public class Blackboard
@@ -101,7 +84,25 @@ namespace SAS.Utilities.BlackboardSystem
 
         public void SetValue<T>(BlackboardKey key, T value)
         {
-            entries[key] = new BlackboardEntry<T>(key, value);
+            if (entries.TryGetValue(key, out var existingEntry))
+            {
+                var castedEntry = existingEntry as BlackboardEntry<T>;
+                ////todo: do we really need this 
+                //if (EqualityComparer<T>.Default.Equals(castedEntry.Value, value))
+                //    return; // Value hasn't changed, no need to update
+
+                castedEntry.SetValue(value);
+            }
+            else
+                entries[key] = new BlackboardEntry<T>(key, value); // Create new entry if it doesn’t exist
+        }
+
+        internal void SetValue<T>(BlackboardKey key, T value, bool readyOnly)
+        {
+            if (!readyOnly)
+                entries[key] = new BlackboardEntry<T>(key, value);
+            else
+                entries[key] = new BlackboardReadOnlyEntry<T>(key, value);
         }
 
         public BlackboardKey GetOrRegisterKey(string keyName)
@@ -121,5 +122,39 @@ namespace SAS.Utilities.BlackboardSystem
         public bool ContainsKey(BlackboardKey key) => entries.ContainsKey(key);
 
         public void Remove(BlackboardKey key) => entries.Remove(key);
+
+        [Serializable]
+        public class BlackboardEntry<T>
+        {
+            public BlackboardKey Key { get; }
+            public T Value { get; private set; }
+            public Type ValueType { get; }
+
+            public BlackboardEntry(BlackboardKey key, T value)
+            {
+                Key = key;
+                Value = value;
+                ValueType = typeof(T);
+            }
+
+            public virtual void SetValue(T value)
+            {
+                Value = value;
+            }
+
+            public override bool Equals(object obj) => obj is BlackboardEntry<T> other && other.Key == Key;
+            public override int GetHashCode() => Key.GetHashCode();
+        }
+
+        [Serializable]
+        public class BlackboardReadOnlyEntry<T> : BlackboardEntry<T>
+        {
+            public BlackboardReadOnlyEntry(BlackboardKey key, T value) : base(key, value) { }
+
+            public override void SetValue(T value)
+            {
+                throw new InvalidOperationException($"Cannot modify a read-only blackboard entry for: {Key}.");
+            }
+        }
     }
 }

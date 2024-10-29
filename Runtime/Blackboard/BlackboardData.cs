@@ -30,17 +30,17 @@ namespace SAS.Utilities.BlackboardSystem
         public void SetValueOnBlackboard(Blackboard blackboard)
         {
             var key = blackboard.GetOrRegisterKey(keyName);
-            setValueDispatchTable[value.type](blackboard, key, value);
+            setValueDispatchTable[value.type](blackboard, key, value, readOnly);
         }
 
         // Dispatch table to set different types of value on the blackboard
-        static Dictionary<AnyValue.ValueType, Action<Blackboard, BlackboardKey, AnyValue>> setValueDispatchTable = new() {
-            { AnyValue.ValueType.Int, (blackboard, key, anyValue) => blackboard.SetValue<int>(key, anyValue) },
-            { AnyValue.ValueType.Float, (blackboard, key, anyValue) => blackboard.SetValue<float>(key, anyValue) },
-            { AnyValue.ValueType.Bool, (blackboard, key, anyValue) => blackboard.SetValue<bool>(key, anyValue) },
-            { AnyValue.ValueType.String, (blackboard, key, anyValue) => blackboard.SetValue<string>(key, anyValue) },
-            { AnyValue.ValueType.Vector3, (blackboard, key, anyValue) => blackboard.SetValue<Vector3>(key, anyValue) },
-            { AnyValue.ValueType.ScriptableObject, (blackboard, key, anyValue) => blackboard.SetValue<ScriptableObject>(key, anyValue) },
+        static Dictionary<AnyValue.ValueType, Action<Blackboard, BlackboardKey, AnyValue, bool>> setValueDispatchTable = new() {
+            { AnyValue.ValueType.Int, (blackboard, key, anyValue,readOnly) => blackboard.SetValue<int>(key, anyValue,readOnly) },
+            { AnyValue.ValueType.Float, (blackboard, key, anyValue, readOnly) => blackboard.SetValue<float>(key, anyValue,readOnly) },
+            { AnyValue.ValueType.Bool, (blackboard, key, anyValue, readOnly) => blackboard.SetValue < bool >(key, anyValue, readOnly) },
+            { AnyValue.ValueType.String, (blackboard, key, anyValue, readOnly) => blackboard.SetValue < string >(key, anyValue, readOnly) },
+            { AnyValue.ValueType.Vector3, (blackboard, key, anyValue, readOnly) => blackboard.SetValue<Vector3>(key, anyValue,readOnly) },
+            { AnyValue.ValueType.ScriptableObject, (blackboard, key, anyValue, readOnly) => blackboard.SetValue < ScriptableObject >(key, anyValue, readOnly) },
         };
 
         public void OnBeforeSerialize() { }
