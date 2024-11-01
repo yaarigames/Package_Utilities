@@ -40,7 +40,6 @@ namespace SAS.Utilities.BlackboardSystem
             { AnyValue.ValueType.Bool, (blackboard, key, anyValue, readOnly) => blackboard.SetValue < bool >(key, anyValue, readOnly) },
             { AnyValue.ValueType.String, (blackboard, key, anyValue, readOnly) => blackboard.SetValue < string >(key, anyValue, readOnly) },
             { AnyValue.ValueType.Vector3, (blackboard, key, anyValue, readOnly) => blackboard.SetValue<Vector3>(key, anyValue,readOnly) },
-            { AnyValue.ValueType.ScriptableObject, (blackboard, key, anyValue, readOnly) => blackboard.SetValue < ScriptableObject >(key, anyValue, readOnly) },
         };
 
         public void OnBeforeSerialize() { }
@@ -50,7 +49,7 @@ namespace SAS.Utilities.BlackboardSystem
     [Serializable]
     public struct AnyValue
     {
-        public enum ValueType { Int, Float, Bool, String, Vector3, ScriptableObject }
+        public enum ValueType { Int, Float, Bool, String, Vector3 }
         public ValueType type;
 
         // Storage for different types of values
@@ -59,7 +58,6 @@ namespace SAS.Utilities.BlackboardSystem
         public bool boolValue;
         public string stringValue;
         public Vector3 vector3Value;
-        public ScriptableObject scriptableObjectValue;
         // Add more types as needed, but remember to add them to the dispatch table above and the custom Editor
 
         // Implicit conversion operators to convert AnyValue to different types
@@ -68,7 +66,6 @@ namespace SAS.Utilities.BlackboardSystem
         public static implicit operator bool(AnyValue value) => value.ConvertValue<bool>();
         public static implicit operator string(AnyValue value) => value.ConvertValue<string>();
         public static implicit operator Vector3(AnyValue value) => value.ConvertValue<Vector3>();
-        public static implicit operator ScriptableObject(AnyValue value) => value.ConvertValue<ScriptableObject>();
 
 
         T ConvertValue<T>()
@@ -80,7 +77,6 @@ namespace SAS.Utilities.BlackboardSystem
                 ValueType.Bool => AsBool<T>(boolValue),
                 ValueType.String => (T)(object)stringValue,
                 ValueType.Vector3 => AsVector3<T>(vector3Value),
-                ValueType.ScriptableObject => AsScriptableObject<T>(scriptableObjectValue),
                 _ => throw new NotSupportedException($"Not supported value type: {typeof(T)}")
             };
         }
@@ -90,7 +86,5 @@ namespace SAS.Utilities.BlackboardSystem
         T AsInt<T>(int value) => typeof(T) == typeof(int) && value is T correctType ? correctType : default;
         T AsFloat<T>(float value) => typeof(T) == typeof(float) && value is T correctType ? correctType : default;
         T AsVector3<T>(Vector3 value) => typeof(T) == typeof(Vector3) && value is T correctType ? correctType : default;
-        T AsScriptableObject<T>(ScriptableObject value) => typeof(T) == typeof(ScriptableObject) && value is T correctType ? correctType : default;
-
     }
 }

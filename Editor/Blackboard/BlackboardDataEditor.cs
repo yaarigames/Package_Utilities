@@ -64,11 +64,6 @@ namespace SAS.Utilities.BlackboardSystem.Editor
                         var vec3Value = value.FindPropertyRelative("vector3Value");
                         EditorGUI.PropertyField(valueRect, vec3Value, GUIContent.none);
                         break;
-                    case AnyValue.ValueType.ScriptableObject:
-                        readOnly.boolValue = true;
-                        var scriptableObjectValue = value.FindPropertyRelative("scriptableObjectValue");
-                        EditorGUI.PropertyField(valueRect, scriptableObjectValue, GUIContent.none);
-                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

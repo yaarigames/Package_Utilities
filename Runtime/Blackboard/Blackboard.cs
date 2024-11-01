@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace SAS.Utilities.BlackboardSystem
 {
@@ -60,26 +59,19 @@ namespace SAS.Utilities.BlackboardSystem
 
         public bool TryGetValue<T>(BlackboardKey key, out T value)
         {
+            value = GetValue<T>(key);
+            return value != null;
+        }
+
+        public T GetValue<T>(BlackboardKey key)
+        {
             if (entries.TryGetValue(key, out var entry))
             {
 
                 if (entry is BlackboardEntry<T> castedEntry)
-                {
-                    value = castedEntry.Value;
-                    return true;
-                }
-
-                if (entry is BlackboardEntry<ScriptableObject> objectEntry)
-                {
-                    value = (T)(object)objectEntry.Value; //todo:this might throw type cast exception. handle it gracefully
-                    return true;
-                }
+                    return castedEntry.Value;
             }
-
-            value = default;
-            UnityEngine.Debug.LogError($"Key not found: {key}");
-
-            return false;
+            return default;
         }
 
         public void SetValue<T>(BlackboardKey key, T value)
