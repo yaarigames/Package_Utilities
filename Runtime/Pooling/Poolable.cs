@@ -7,8 +7,10 @@ namespace SAS.Pool
         internal ComponentPoolSO<Poolable> ObjectPool { get; set; }
         private ISpawnable[] _spawnables;
         public bool active { get; private set; } = false;
-        protected virtual void Awake()
+
+        protected override void Awake()
         {
+            base.Awake();
             _spawnables = GetComponentsInChildren<ISpawnable>();
         }
 
